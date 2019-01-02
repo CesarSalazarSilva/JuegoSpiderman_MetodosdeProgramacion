@@ -1,21 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 
-int Matriz[10][10] ={
-{0,0,1,2,1,1,0,0,0,0},
-{0,0,0,2,1,0,0,0,0,0},
-{0,0,1,2,0,0,0,0,0,0},
-{0,0,0,1,1,1,2,1,0,0},
-{0,0,0,0,0,1,1,0,0,0},
-{0,0,0,1,2,1,0,0,0,0},
-{0,0,0,0,1,0,0,0,0,0},
-{0,0,1,2,2,0,0,0,0,0},
-{0,0,0,1,3,3,2,0,0,0},
-{0,0,0,0,2,2,0,0,0,0}
-};
-
-int fila = 10;
-int columna = 10;
 int correlativo = 0;
 
 //Creamos un Structure con :
@@ -29,7 +15,7 @@ typedef struct estado estado;
 struct estado{
 	int id;
 	int idAnterior;
-	int arreglo[10][10];
+	int ** arreglo;
 	int px;
 	int py;
 	int contenido;
@@ -39,8 +25,12 @@ struct estado{
 //Funcion que crea un estado
 //Entrada : Id actual del estado a crear, id del estado del que viene , posicionx, posiciony en este estado, mapa anterior.
 //Salida  : Estado nuevo en base a los parametros entregados. 
-estado CrearEstado(int * idn, int idAnteriorn, int pxn, int pyn,char dedondevienen, int Matrizanteriorn[10][10] ){
+estado CrearEstado(int * idn, int idAnteriorn, int pxn, int pyn,char dedondevienen, int ** Matrizanteriorn, int fila, int columna ){
 	estado nuevoEstado;
+	nuevoEstado.arreglo =  (int**)malloc(sizeof(int*)*fila);
+	for (int i = 0; i < fila; ++i){
+		nuevoEstado.arreglo[i]=(int*)malloc(sizeof(int)*columna);
+	}
 	nuevoEstado.id = *idn;
 	nuevoEstado.idAnterior = idAnteriorn;
 	nuevoEstado.px = pxn;
@@ -87,7 +77,7 @@ estado *BorrarEstado(estado *lista,int * largolista){
 //Conjunto de funciones que revisan si exite un moviento posible a la direccion señalada en el nombre de la funcion.
 //Entrada : Un estado a evaluar.
 //Salida  : Respectivamente un booleano 1 si exite movimiento posible en esa direccion, 0 para lo contrario.
-int revisarN(estado EstadoActual){
+int revisarN(estado EstadoActual, int fila, int columna){
 	// Retorna que si hay movimiento
 	if (EstadoActual.py > 0){
 		if(EstadoActual.arreglo[EstadoActual.py-1][EstadoActual.px] != 0 ){
@@ -97,7 +87,7 @@ int revisarN(estado EstadoActual){
 	// Retorna que no hay moviento  
     return 0;
 }
-int revisarS(estado EstadoActual){
+int revisarS(estado EstadoActual, int fila, int columna){
 	if (EstadoActual.py < fila-1){
 		if (EstadoActual.arreglo[EstadoActual.py+1][EstadoActual.px] != 0){
 	        return 1;
@@ -105,7 +95,7 @@ int revisarS(estado EstadoActual){
     }
     return 0;
 }
-int revisarE(estado EstadoActual){
+int revisarE(estado EstadoActual, int fila, int columna){
     if (EstadoActual.px < columna-1){
     	if (EstadoActual.arreglo[EstadoActual.py][EstadoActual.px+1] != 0){
 	        return 1;
@@ -113,7 +103,7 @@ int revisarE(estado EstadoActual){
     }
     return 0;
 }
-int revisarO(estado EstadoActual){
+int revisarO(estado EstadoActual, int fila, int columna){
     if (EstadoActual.px > 0){
     	if (EstadoActual.arreglo[EstadoActual.py][EstadoActual.px-1] != 0){
 	        return 1;
@@ -151,7 +141,7 @@ int ConversionY(estado EstadoActual){
 //Funcion que revisa si la matriz de un estado contiene la solucion final.
 //Entrada : Un estado.
 //Salida  : Un booleano, cero si tiene algun edificion con un numero distinto de 0; 1 si ya todo está en cero.
-int EncontroSolucionFinal(estado EstadoActual){
+int EncontroSolucionFinal(estado EstadoActual, int fila, int columna){
 	for (int i = 0; i < fila; ++i){
 		for (int j = 0; j < columna; ++j){
 			if (EstadoActual.arreglo[i][j] != 0){
@@ -213,7 +203,7 @@ void mostrarsolucion(estado * lista, int largolista, estado Estadofinal){
 //Revisa si el estado a Analizar contiene 2 conjuntos separados de edificios para asi ignorar estos casos dado que no hay solucion para ellos.
 //Entrada : Un estado a analizar.
 //Salida  : Un booleano, 1 para cuando exista 2 conjuntos separados, 0 para un estado que solo tenga un unico conjunto a recorrer.
-int DiscriminarEstados(estado EAR){
+int DiscriminarEstados(estado EAR, int fila, int columna){
 	int auxA = 0;
 	int auxF[fila];
 	for (int i = 0; i < fila-1; ++i){
@@ -258,7 +248,7 @@ int DiscriminarEstados(estado EAR){
 //Funcion que entrega las posiciones validas para iniciar.
 //Entrada : Un arreglo, el cual representa la ciudad.
 //Salida  : Un arreglo con las posiciones validas para iniciar en la fila superior que contenga edificos.
-int ** IniciosPosibles(int arreglo[fila][columna], int * aux){
+int ** IniciosPosibles(int ** arreglo, int * aux, int fila, int columna){
 	int ** comienzosPosibles =  (int**)malloc(sizeof(int*)*1);
     comienzosPosibles[0]=(int*)malloc(sizeof(int)*2);
 	for (int i = 0; i < fila; ++i){
@@ -280,7 +270,7 @@ int ** IniciosPosibles(int arreglo[fila][columna], int * aux){
 //Funcion que realiza la Busqueda en Espacio de Estados.
 //Entrada : La matriz a recorrer, las filas de la matriz, las columnas , la posicion inicial en x y la posicion inicial en "y" para comenzar a recorrer.
 //Salida  : Un booleano con 1 si encontró la forma de recorrer y dejar todo en cero, de lo contrario un 0.
-int BEE(int Matriz[fila][columna],int fila,int columna, int posicionIX,int posicionIY){
+int BEE(int ** Matriz,int fila,int columna, int posicionIX,int posicionIY){
 	int canAbiertos = 0;
     int canCerrados = 0;
     //LEA lista estados abiertos
@@ -288,14 +278,14 @@ int BEE(int Matriz[fila][columna],int fila,int columna, int posicionIX,int posic
     //LER lista estados recorridos
     estado * LER = (estado *)malloc(sizeof(estado)*canCerrados);
     //Se crea el estado inicial 
-    estado inicial = CrearEstado(&correlativo,posicionIX,posicionIY,0,'I',Matriz);
+    estado inicial = CrearEstado(&correlativo,posicionIX,posicionIY,0,'I',Matriz,fila,columna);
     //Agregamos a la lista de los estados 
     LEA = AgregarEstado(LEA,&canAbiertos,inicial);
 	while(canAbiertos > 0){
 		estado eActual = LEA[0];
 		//Revisamos si este estado contiene la solucion, es decir deja el mapa en 0 
 		//No borramos este estado para que no acuse luego que no encontramos solucion
-		if (EncontroSolucionFinal(LEA[0]) == 1){
+		if (EncontroSolucionFinal(LEA[0],fila,columna) == 1){
 			//Muestra la solucion 
 			//Devolver pasos para salir
 			printf("El Estado  Inicial es : \n");
@@ -319,34 +309,34 @@ int BEE(int Matriz[fila][columna],int fila,int columna, int posicionIX,int posic
 			return 1;
 		}
 		correlativo+=1;
-		if (revisarN(eActual) == 1){
+		if (revisarN(eActual,fila,columna) == 1){
 			//Creamos un estado nuevo al norte del actual copiando el mapa anterior restando una a la llegada
-			estado norte = CrearEstado(&correlativo,eActual.id,eActual.px,eActual.py-1,'S',eActual.arreglo);
-			if(DiscriminarEstados(norte)==0){
+			estado norte = CrearEstado(&correlativo,eActual.id,eActual.px,eActual.py-1,'S',eActual.arreglo,fila,columna);
+			if(DiscriminarEstados(norte,fila,columna)==0){
 				//Agregamos el Estado a ListaEstadoAbierto
 				LEA = AgregarEstado(LEA,&canAbiertos,norte);
 			}
 		}
-		if (revisarS(eActual) == 1){
+		if (revisarS(eActual,fila,columna) == 1){
 			//Creamos un estado nuevo 
-			estado sur = CrearEstado(&correlativo,eActual.id,eActual.px,eActual.py+1,'N',eActual.arreglo);
-			if(DiscriminarEstados(sur)==0){
+			estado sur = CrearEstado(&correlativo,eActual.id,eActual.px,eActual.py+1,'N',eActual.arreglo,fila,columna);
+			if(DiscriminarEstados(sur,fila,columna)==0){
 				//Agregamos el Estado a ListaEstadoAbierto
 				LEA = AgregarEstado(LEA,&canAbiertos,sur);
 			}
 		}
-		if (revisarO(eActual) == 1){
+		if (revisarO(eActual,fila,columna) == 1){
 			//Creamos un estado nuevo 
-			estado oeste = CrearEstado(&correlativo,eActual.id,eActual.px-1,eActual.py,'E',eActual.arreglo);
-			if(DiscriminarEstados(oeste)==0){
+			estado oeste = CrearEstado(&correlativo,eActual.id,eActual.px-1,eActual.py,'E',eActual.arreglo,fila,columna);
+			if(DiscriminarEstados(oeste,fila,columna)==0){
 				//Agregamos el Estado a ListaEstadoAbierto
 				LEA = AgregarEstado(LEA,&canAbiertos,oeste);
 			}
 		}
-		if (revisarE(eActual) == 1){
+		if (revisarE(eActual,fila,columna) == 1){
 			//Creamos un estado nuevo 
-			estado este = CrearEstado(&correlativo,eActual.id,eActual.px+1,eActual.py,'O',eActual.arreglo);
-			if(DiscriminarEstados(este)==0){
+			estado este = CrearEstado(&correlativo,eActual.id,eActual.px+1,eActual.py,'O',eActual.arreglo,fila,columna);
+			if(DiscriminarEstados(este,fila,columna)==0){
 				//Agregamos el Estado a ListaEstadoAbierto
 				LEA = AgregarEstado(LEA,&canAbiertos,este);
 			}
@@ -363,15 +353,47 @@ int BEE(int Matriz[fila][columna],int fila,int columna, int posicionIX,int posic
 }
 
 int main(){
+	int time0 = time(NULL);
+
+	int Matris[10][10] ={
+		{0,0,1,2,1,1,0,0,0,0},
+		{0,0,0,2,1,0,0,0,0,0},
+		{0,0,1,2,0,0,0,0,0,0},
+		{0,0,0,1,1,1,2,1,0,0},
+		{0,0,0,0,0,1,1,0,0,0},
+		{0,0,0,1,2,1,0,0,0,0},
+		{0,0,0,0,1,0,0,0,0,0},
+		{0,0,1,2,2,0,0,0,0,0},
+		{0,0,0,1,3,3,2,0,0,0},
+		{0,0,0,0,2,2,0,0,0,0}
+		};
+	int fila = 10;
+	int columna = 10;
+	int ** Matriz = (int**)malloc(sizeof(int*)*fila);
+	for (int i = 0; i < fila; ++i){
+		Matriz[i]=(int*)malloc(sizeof(int)*columna);
+	}
+
+	for (int i = 0; i < fila; ++i){
+		for (int j = 0; j < columna; ++j){
+			Matriz[i][j] = Matris[i][j];
+		}
+	}
+
 	int aux = 0;
-	int ** inicio = IniciosPosibles(Matriz,&aux);
+	int ** inicio = IniciosPosibles(Matriz,&aux,fila,columna);
 	for (int i = 0; i < aux; ++i){
 		printf("%d , ", inicio[i][0]);
 		printf("%d\n", inicio[i][1]);
 	}
 	for (int i = 0; i < aux; ++i){
-		if(BEE(Matriz,fila,columna,inicio[i][0],inicio[i][1])){
+		if(BEE(Matriz,fila,columna,inicio[i][0],inicio[i][1]) == 1){
+			int time1 = time(NULL);
+			float tiempo = difftime(time1,time0);
+			printf("%f es el tiempo de ejecucion\n",tiempo );
 			return 0;
 		}
 	}
+	printf("NO encontre Salida en este mapa \n");
+
 }
