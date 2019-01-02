@@ -306,6 +306,8 @@ int BEE(int ** Matriz,int fila,int columna, int posicionIX,int posicionIY){
 			}
 			printf("----------------------------------------------\n");
 			mostrarsolucion(LER,canCerrados,eActual);
+
+			//Liberar Toda la memoria almacenada
 			return 1;
 		}
 		correlativo+=1;
