@@ -35,23 +35,23 @@ void imprimeCiudad(int** matrz){
 int verificar(int ** matriz, int fila, int columna){
 	int respuesta=0;
 	if (fila-1<0){
-		if (matriz[fila+1][columna] && matriz[fila][columna+1] && matriz[fila][columna-1]){
+		if ((matriz[fila+1][columna]==0) && (matriz[fila][columna+1]==0) && (matriz[fila][columna-1]==0)){
 			respuesta= 1;
 		}
 	}else if(fila+1> 9){
-		if (matriz[fila-1][columna] && matriz[fila][columna+1] && matriz[fila][columna-1]){
+		if ((matriz[fila-1][columna]==0) && (matriz[fila][columna+1]==0) && (matriz[fila][columna-1]==0)){
 			respuesta= 1;
 		}
 	}else if(columna+1> 9){
-		if (matriz[fila-1][columna] && matriz[fila+1][columna] && matriz[fila][columna-1]){
+		if ((matriz[fila-1][columna]==0) && (matriz[fila+1][columna]==0) && (matriz[fila][columna-1]==0)){
 			respuesta= 1;
 		}
 	}else if (columna-1<0){
-		if (matriz[fila-1][columna] && matriz[fila+1][columna] && matriz[fila][columna+1]){
+		if ((matriz[fila-1][columna]==0) && (matriz[fila+1][columna]==0) && (matriz[fila][columna+1]==0)){
 			respuesta= 1;
 		}
 	}else{
-		respuesta= 2;
+		if((matriz[fila-1][columna]==0) && (matriz[fila+1][columna]==0) && (matriz[fila][columna-1]==0) && (matriz[fila][columna+1]==0));
 	}
 	return respuesta;
 }
@@ -135,14 +135,15 @@ void juegoNuevo(){
 								verificador= verificar(matriz, fila, columna);
 								if (verificador == 1 && contadorEdificios !=0){
 									printf("Has quedado encerrado! GAME OVER.");
-										exit(2);
+									exit(0);
 								}else if(verificador==1 && contadorEdificios == 0){
 									printf("Felicitaciones, has capturado a todos los malhechores!");
-									break;
+									exit(0);
 								}else{
 									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
+									break;
 								}
 							}
 						case 2:
@@ -161,14 +162,15 @@ void juegoNuevo(){
 								verificador= verificar(matriz, fila, columna);
 								if (verificador == 1 && contadorEdificios !=0){
 									printf("Has quedado encerrado! GAME OVER.");
-									break;
+									exit(0);
 								}else if(verificador==1 && contadorEdificios == 0){
 									printf("Felicitaciones, has capturado a todos los malhechores!");
-									break;
+									exit(0);
 								}else{
 									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
+									break;
 								}
 							}
 						case 3:
@@ -187,14 +189,15 @@ void juegoNuevo(){
 								verificador= verificar(matriz, fila, columna);
 								if (verificador == 1 && contadorEdificios !=0){
 									printf("Has quedado encerrado! GAME OVER.");
-									break;
+									exit(0);
 								}else if(verificador==1 && contadorEdificios == 0){
 									printf("Felicitaciones, has capturado a todos los malhechores!");
-									break;
+									exit(0);
 								}else{
 									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
+									break;
 								}
 							}
 						case 4:
@@ -213,14 +216,15 @@ void juegoNuevo(){
 								verificador= verificar(matriz, fila, columna);
 								if (verificador == 1 && contadorEdificios !=0){
 									printf("Has quedado encerrado! GAME OVER.");
-									break;
+									exit(0);
 								}else if(verificador==1 && contadorEdificios == 0){
 									printf("Felicitaciones, has capturado a todos los malhechores!");
-									break;
+									exit(0);
 								}else{
 									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
+									break;
 								}
 							}
 
@@ -312,14 +316,15 @@ void juegoAnterior(){
 									verificador= verificar(matriz, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("Has quedado encerrado! GAME OVER.");
-										exit(2);
+										exit(0);
 									}else if(verificador==1 && contadorEdificios == 0){
 										printf("Felicitaciones, has capturado a todos los malhechores!");
-										break;
+										exit(0);
 									}else{
 										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
+										break;
 									}
 								}
 							case 2:
@@ -338,14 +343,15 @@ void juegoAnterior(){
 									verificador= verificar(matriz, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("Has quedado encerrado! GAME OVER.");
-										exit(2);
+										exit(0);
 									}else if(verificador==1 && contadorEdificios == 0){
 										printf("Felicitaciones, has capturado a todos los malhechores!");
-										break;
+										exit(0);
 									}else{
 										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
+										break;
 									}
 								}
 							case 3:
@@ -364,14 +370,15 @@ void juegoAnterior(){
 									verificador= verificar(matriz, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("Has quedado encerrado! GAME OVER.");
-										exit(2);
+										exit(0);
 									}else if(verificador==1 && contadorEdificios == 0){
 										printf("Felicitaciones, has capturado a todos los malhechores!");
-										break;
+										exit(0);
 									}else{
 										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
+										break;
 									}
 								}
 							case 4:
@@ -390,14 +397,15 @@ void juegoAnterior(){
 									verificador= verificar(matriz, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("Has quedado encerrado! GAME OVER.");
-										exit(2);
+										exit(0);
 									}else if(verificador==1 && contadorEdificios == 0){
 										printf("Felicitaciones, has capturado a todos los malhechores!");
-										break;
+										exit(0);
 									}else{
 										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
 										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
+										break;
 									}
 								}
 
