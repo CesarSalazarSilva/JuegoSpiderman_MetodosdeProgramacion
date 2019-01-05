@@ -104,6 +104,10 @@ void juegoNuevo(){
 		printf("Error, por favor ingrese un numero valido");
 	}else{
 		do{
+			contadorEdificios= contadorEdificios-1;
+			aux= matriz[fila][columna];
+			matriz[fila][columna]=aux-1;
+			imprimeCiudad(matriz);
 			printf( "\n   1. Norte.");
         	printf( "\n   2. Sur.");
         	printf( "\n   3. Este.");
@@ -111,120 +115,153 @@ void juegoNuevo(){
 			printf( "\n   5. Salir. ");
 			printf( "\n   Seleccione un movimiento (1-5)");
            	scanf( "%d", &opcion);
-			contadorEdificios= contadorEdificios-1;
-			aux= matriz[fila][columna];
-			matriz[fila][columna]=aux-1;
 			if (opcion>5 || opcion<1){
-				printf("Error al recibir su decision, por favor ingrese un valor entre 1 y 5.");
+				printf("\nError al recibir su decision, por favor ingrese un valor entre 1 y 5.");
 			}else{
 				while(opcion!=5){
 					switch(opcion){
 						case 1:
 							if(fila-1<0){
-								printf("Has salido de los bordes de la ciudad!");
-								printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								printf("\nHas salido de los bordes de la ciudad!");
+								printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 								scanf("%d", &opcion);
 							}else{
 								fila= fila-1;
 								int aux1= matriz[fila][columna];
-								aux1= aux1-1;
-								contadorEdificios= contadorEdificios-1;
-								matriz[fila][columna]= aux1;
-								copiaCiudad(inputDireccion, matriz);
-								imprimeCiudad(matriz);
-								verificador= verificar(matriz, fila, columna);
-								if (verificador == 1 && contadorEdificios !=0){
-									printf("Has quedado encerrado! GAME OVER.");
-									exit(0);
-								}else if(verificador==1 && contadorEdificios == 0){
-									printf("Felicitaciones, has capturado a todos los malhechores!");
-									exit(0);
-								}else{
-									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								if(aux1==0){
+									fila=fila+1;
+									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+									printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+									printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 									break;
+								}else{
+									aux1= aux1-1;
+									contadorEdificios= contadorEdificios-1;
+									matriz[fila][columna]= aux1;
+									copiaCiudad(inputDireccion, matriz);
+									imprimeCiudad(matriz);
+									verificador= verificar(matriz, fila, columna);
+									if (verificador == 1 && contadorEdificios !=0){
+										printf("\nHas quedado encerrado! GAME OVER.\n");
+										exit(0);
+									}else if(verificador==1 && contadorEdificios == 0){
+										printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+										exit(0);
+									}else{
+										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+										scanf("%d", &opcion);
+										break;
+									}
 								}
 							}
 						case 2:
 							if (fila+1>9){
-								printf("Has salido de los bordes de la ciudad!");
-								printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								printf("\nHas salido de los bordes de la ciudad!");
+								printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 								scanf("%d", &opcion);
 							}else{
 								fila= fila+1;
 								int aux2= matriz[fila][columna];
-								aux2= aux2-1;
-								contadorEdificios= contadorEdificios-1;
-								matriz[fila][columna]= aux2;
-								copiaCiudad(inputDireccion, matriz);
-								imprimeCiudad(matriz);
-								verificador= verificar(matriz, fila, columna);
-								if (verificador == 1 && contadorEdificios !=0){
-									printf("Has quedado encerrado! GAME OVER.");
-									exit(0);
-								}else if(verificador==1 && contadorEdificios == 0){
-									printf("Felicitaciones, has capturado a todos los malhechores!");
-									exit(0);
-								}else{
-									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								if(aux2==0){
+									fila=fila-1;
+									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+									printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+									printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 									break;
-								}
+								}else{
+									aux2= aux2-1;
+									contadorEdificios= contadorEdificios-1;
+									matriz[fila][columna]= aux2;
+									copiaCiudad(inputDireccion, matriz);
+									imprimeCiudad(matriz);
+									verificador= verificar(matriz, fila, columna);
+									if (verificador == 1 && contadorEdificios !=0){
+										printf("\nHas quedado encerrado! GAME OVER.\n");
+										exit(0);
+									}else if(verificador==1 && contadorEdificios == 0){
+										printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+										exit(0);
+									}else{
+										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+										scanf("%d", &opcion);
+										break;
+									}
+								}	
 							}
 						case 3:
 							if(columna+1>9){
-								printf("Has salido de los bordes de la ciudad!");
-								printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								printf("\nHas salido de los bordes de la ciudad!");
+								printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 								scanf("%d", &opcion);
 							}else{
 								columna= columna+1;
 								int aux3= matriz[fila][columna];
-								aux3= aux3-1;
-								contadorEdificios= contadorEdificios-1;
-								matriz[fila][columna]= aux3;
-								copiaCiudad(inputDireccion, matriz);
-								imprimeCiudad(matriz);
-								verificador= verificar(matriz, fila, columna);
-								if (verificador == 1 && contadorEdificios !=0){
-									printf("Has quedado encerrado! GAME OVER.");
-									exit(0);
-								}else if(verificador==1 && contadorEdificios == 0){
-									printf("Felicitaciones, has capturado a todos los malhechores!");
-									exit(0);
-								}else{
-									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								if(aux3==0){
+									columna=columna-1;
+									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+									printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+									printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 									break;
+								}else{
+									aux3= aux3-1;
+									contadorEdificios= contadorEdificios-1;
+									matriz[fila][columna]= aux3;
+									copiaCiudad(inputDireccion, matriz);
+									imprimeCiudad(matriz);
+									verificador= verificar(matriz, fila, columna);
+									if (verificador == 1 && contadorEdificios !=0){
+										printf("\nHas quedado encerrado! GAME OVER.\n");
+										exit(0);
+									}else if(verificador==1 && contadorEdificios == 0){
+										printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+										exit(0);
+									}else{
+										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+										scanf("%d", &opcion);
+										break;
+									}
 								}
 							}
 						case 4:
 							if(columna-1<0){
-								printf("Has salido de los bordes de la ciudad!");
-								printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								printf("\nHas salido de los bordes de la ciudad!");
+								printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 								scanf("%d", &opcion);
 							}else{
 								columna= columna-1;
 								int aux4= matriz[fila][columna];
-								aux4= aux4-1;
-								contadorEdificios= contadorEdificios-1;
-								matriz[fila][columna]= aux4;
-								copiaCiudad(inputDireccion, matriz);
-								imprimeCiudad(matriz);
-								verificador= verificar(matriz, fila, columna);
-								if (verificador == 1 && contadorEdificios !=0){
-									printf("Has quedado encerrado! GAME OVER.");
-									exit(0);
-								}else if(verificador==1 && contadorEdificios == 0){
-									printf("Felicitaciones, has capturado a todos los malhechores!");
-									exit(0);
-								}else{
-									printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-									printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+								if(aux4==0){
+									columna=columna-1;
+									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+									printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+									printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 									break;
+								}else{
+									aux4= aux4-1;
+									contadorEdificios= contadorEdificios-1;
+									matriz[fila][columna]= aux4;
+									copiaCiudad(inputDireccion, matriz);
+									imprimeCiudad(matriz);
+									verificador= verificar(matriz, fila, columna);
+									if (verificador == 1 && contadorEdificios !=0){
+										printf("\nHas quedado encerrado! GAME OVER.\n");
+										exit(0);
+									}else if(verificador==1 && contadorEdificios == 0){
+										printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+										exit(0);
+									}else{
+										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+										scanf("%d", &opcion);
+										break;
+									}
 								}
 							}
 
@@ -249,7 +286,7 @@ void juegoAnterior(){
 	int opcion;
 	archivoJuegoAnterior= fopen(inputDireccion, "r");
 	if (archivoJuegoAnterior==NULL){
-		printf("No has iniciado ningun juego anteriormente, cerrando programa...");		
+		printf("\nNo has iniciado ningun juego anteriormente, cerrando programa...");		
 		exit(1);
 	}
 	int ** matriz= (int**)malloc(sizeof(int*)*10);//ojo acá, es solo porque me falta la variable global
@@ -271,7 +308,7 @@ void juegoAnterior(){
 	//Luego se copia en el archivo que llevará el progreso del jugador registrando su última jugada
 	copiaCiudad(inputDireccion, matriz);
 	imprimeCiudad(matriz);
-	printf("Ingrese las coordenadas del punto [fila][columna] de donde quiere partir, considere que solo puede partir en aquellos puntos del mapa distintos a '0' :\n");
+	printf("\nIngrese las coordenadas del punto [fila][columna] de donde quiere partir, considere que solo puede partir en aquellos puntos del mapa distintos a '0' :\n");
 	printf("Ingrese el numero de fila:\n");
 	scanf("%d", &fila);
 	printf("Ingrese el numero de columna:\n");
@@ -279,12 +316,16 @@ void juegoAnterior(){
 	fila= fila-1;
 	columna= columna-1;
 	if (fila>10 || fila<0 || columna> 10 || columna<0){
-		printf("Error, por favor ingrese un numero valido");
+		printf("\nError, por favor ingrese un numero valido");
 	}else{
 		if (matriz[fila][columna] != 0){
-			printf("Error, por favor ingrese una coordenada que corresponda a un '0' en el mapa");
+			printf("\nError, por favor ingrese una coordenada que corresponda a un '0' en el mapa");
 		}else{
 			do{
+				contadorEdificios= contadorEdificios-1;
+				aux= matriz[fila][columna];
+				matriz[fila][columna]=aux-1;
+				imprimeCiudad(matriz);
 				printf( "\n   1. Norte.");
         		printf( "\n   2. Sur.");
         		printf( "\n   3. Este.");
@@ -292,127 +333,160 @@ void juegoAnterior(){
 				printf( "\n   5. Salir. ");
 				printf( "\n   Seleccione un movimiento (1-5)");
            		scanf( "%d", &opcion);
-				contadorEdificios= contadorEdificios-1;
-				aux= matriz[fila][columna];
-				matriz[fila][columna]=aux-1;
+
+
 				if (opcion>5 || opcion<1){
-					printf("Error al recibir su decision, por favor ingrese un valor entre 1 y 5.");
+					printf("\nError al recibir su decision, por favor ingrese un valor entre 1 y 5.");
 				}else{
 					while(opcion!=5){
 						switch(opcion){
 							case 1:
 								if(fila-1<0){
-									printf("Has salido de los bordes de la ciudad!");
-									printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									printf("\nHas salido de los bordes de la ciudad!");
+									printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 								}else{
 									fila= fila-1;
 									int aux1= matriz[fila][columna];
-									aux1= aux1-1;
-									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux1;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
-									if (verificador == 1 && contadorEdificios !=0){
-										printf("Has quedado encerrado! GAME OVER.");
-										exit(0);
-									}else if(verificador==1 && contadorEdificios == 0){
-										printf("Felicitaciones, has capturado a todos los malhechores!");
-										exit(0);
-									}else{
-										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									if(aux1==0){
+										fila=fila+1;
+										printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+										printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
 										break;
-									}
+									}else{
+										aux1= aux1-1;
+										contadorEdificios= contadorEdificios-1;
+										matriz[fila][columna]= aux1;
+										copiaCiudad(inputDireccion, matriz);
+										imprimeCiudad(matriz);
+										verificador= verificar(matriz, fila, columna);
+										if (verificador == 1 && contadorEdificios !=0){
+											printf("\nHas quedado encerrado! GAME OVER.\n");
+											exit(0);
+										}else if(verificador==1 && contadorEdificios == 0){
+											printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+											exit(0);
+										}else{
+											printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+											printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+											scanf("%d", &opcion);
+											break;
+										}
+									}						
 								}
 							case 2:
 								if (fila+1>9){
-									printf("Has salido de los bordes de la ciudad!");
-									printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									printf("\nHas salido de los bordes de la ciudad!");
+									printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 								}else{
 									fila= fila+1;
 									int aux2= matriz[fila][columna];
-									aux2= aux2-1;
-									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux2;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
-									if (verificador == 1 && contadorEdificios !=0){
-										printf("Has quedado encerrado! GAME OVER.");
-										exit(0);
-									}else if(verificador==1 && contadorEdificios == 0){
-										printf("Felicitaciones, has capturado a todos los malhechores!");
-										exit(0);
-									}else{
-										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									if(aux2==0){
+										fila=fila-1;
+										printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+										printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
 										break;
+									}else{
+										aux2= aux2-1;
+										contadorEdificios= contadorEdificios-1;
+										matriz[fila][columna]= aux2;
+										copiaCiudad(inputDireccion, matriz);
+										imprimeCiudad(matriz);
+										verificador= verificar(matriz, fila, columna);
+										if (verificador == 1 && contadorEdificios !=0){
+											printf("\nHas quedado encerrado! GAME OVER.\n");
+											exit(0);
+										}else if(verificador==1 && contadorEdificios == 0){
+											printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+											exit(0);
+										}else{
+											printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+											printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+											scanf("%d", &opcion);
+											break;
+										}
 									}
 								}
 							case 3:
 								if (columna+1>9){
-									printf("Has salido de los bordes de la ciudad!");
-									printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									printf("\nHas salido de los bordes de la ciudad!");
+									printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 								}else{
 									columna= columna+1;
 									int aux3= matriz[fila][columna];
-									aux3= aux3-1;
-									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux3;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
-									if (verificador == 1 && contadorEdificios !=0){
-										printf("Has quedado encerrado! GAME OVER.");
-										exit(0);
-									}else if(verificador==1 && contadorEdificios == 0){
-										printf("Felicitaciones, has capturado a todos los malhechores!");
-										exit(0);
-									}else{
-										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									if(aux3==0){
+										columna=columna-1;
+										printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+										printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
 										break;
+									}else{
+										aux3= aux3-1;
+										contadorEdificios= contadorEdificios-1;
+										matriz[fila][columna]= aux3;
+										copiaCiudad(inputDireccion, matriz);
+										imprimeCiudad(matriz);
+										verificador= verificar(matriz, fila, columna);
+										if (verificador == 1 && contadorEdificios !=0){
+											printf("\nHas quedado encerrado! GAME OVER.\n");
+											exit(0);
+										}else if(verificador==1 && contadorEdificios == 0){
+											printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+											exit(0);
+										}else{
+											printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+											printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+											scanf("%d", &opcion);
+											break;
+										}
 									}
 								}
 							case 4:
 								if (columna-1<0){
-									printf("Has salido de los bordes de la ciudad!");
-									printf("Ingresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									printf("\nHas salido de los bordes de la ciudad!");
+									printf("\nIngresa otra accion(1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 									scanf("%d", &opcion);
 								}else{
 									columna= columna-1;
 									int aux4= matriz[fila][columna];
-									aux4= aux4-1;
-									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux4;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
-									if (verificador == 1 && contadorEdificios !=0){
-										printf("Has quedado encerrado! GAME OVER.");
-										exit(0);
-									}else if(verificador==1 && contadorEdificios == 0){
-										printf("Felicitaciones, has capturado a todos los malhechores!");
-										exit(0);
-									}else{
-										printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
-										printf("Ingrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+									if(aux4==0){
+										columna=columna+1;
+										printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
+										printf("\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+										printf("\nIngrese otra accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
 										scanf("%d", &opcion);
 										break;
+									}else{
+										aux4= aux4-1;
+										contadorEdificios= contadorEdificios-1;
+										matriz[fila][columna]= aux4;
+										copiaCiudad(inputDireccion, matriz);
+										imprimeCiudad(matriz);
+										verificador= verificar(matriz, fila, columna);
+										if (verificador == 1 && contadorEdificios !=0){
+											printf("\nHas quedado encerrado! GAME OVER.\n");
+											exit(0);
+										}else if(verificador==1 && contadorEdificios == 0){
+											printf("\nFelicitaciones, has capturado a todos los malhechores!\n");
+											exit(0);
+										}else{
+											printf( "\n Su ubicacion actual es [%d] [%d]", fila+1, columna+1);
+											printf("\nIngrese su siguiente accion (1.Norte, 2.Sur, 3. Este, 4. Oeste, 5. Salir");
+											scanf("%d", &opcion);
+											break;
+										}
 									}
 								}
-
 						}
 					}
 				}
-
 			}
 			while(opcion>5 || opcion<1); //En caso de ingresar valores no validos, no se ejecuta ninguna accion
 		}
@@ -432,11 +506,11 @@ void recorridoManual(){
         scanf( "%d", &decision);
         switch(decision){
         	case 1: 
-				printf("Recuperando Juego Anterior...");
+				printf("\nRecuperando Juego Anterior...");
 				juegoAnterior();	
 
            	case 2: 
-				printf("Iniciando Juego Nuevo...");
+				printf("\nIniciando Juego Nuevo...");
 				juegoNuevo();
         }
 	}
@@ -447,41 +521,42 @@ void recorridoManual(){
 //Funcion que ejecuta el menu con el cual va a interactuar el usuario
 
 void menu(){
+	int eleccion;
 	do{
-		printf(" ------------------------------------------------------------- ");
-		printf("|                                                             |");
-		printf("|                         MENU                                |");
-		printf("|                                                             |");
-		printf("| 1. Ingresa tu mapa                                          |");
-		printf("| 2. Comprueba tu mapa                                        |");
-		printf("| 3. Recorrido automatico                                     |");
-		printf("| 4. Recorrido manual                                         |");
-		printf("| 5. No estoy segura si se me olvido algo                     |");
-		printf("| 6. Salir del juego                                          |");
-		printf("|                                                             |");
-		printf(" ------------------------------------------------------------- ");
-		printf(" Seleccione lo que quiere hacer:")
+		printf("\n ------------------------------------------------------------- \n");
+		printf("|                                                             |\n");
+		printf("|                         MENU                                |\n");
+		printf("|                                                             |\n");
+		printf("| 1. Ingresa tu mapa                                          |\n");
+		printf("| 2. Comprueba tu mapa                                        |\n");
+		printf("| 3. Recorrido automatico                                     |\n");
+		printf("| 4. Recorrido manual                                         |\n");
+		printf("| 5. No estoy segura si se me olvido algo                     |\n");
+		printf("| 6. Salir del juego                                          |\n");
+		printf("|                                                             |\n");
+		printf(" ------------------------------------------------------------- \n");
+		printf(" Seleccione lo que quiere hacer:\n");
 		scanf("%d", &eleccion);
 		switch(eleccion){
 			case 1:
-				printf("Instruccion para ingresar el mapa")
-				/ funcion /
+				printf("Instruccion para ingresar el mapa");
+				// funcion /
 				break;
 			case 2:
-				printf("Instruccion para comprobar el mapa")
-				/ funcion /
+				printf("Instruccion para comprobar el mapa");
+				// funcion /
 				break;
 			case 3:
 				printf("Inicializando el recorrido automatico");
-				/ funcion /
+				//funcion /
 				break;
 			case 4:
 				printf("Inicializando el recorrido manual");
 				recorridoManual();
 				break;
 			case 5:
-				printf("Eso mismo")
-				/ funcion /
+				printf("Eso mismo");
+				// funcion /
 				break;
 			case 6: 
 				printf("Adios!");
@@ -489,6 +564,7 @@ void menu(){
 
 		}
 	}
+	while(eleccion> 6|| eleccion<1); //En caso de ingresar valores no validos, no se ejecuta ninguna accion
 
 }
 
