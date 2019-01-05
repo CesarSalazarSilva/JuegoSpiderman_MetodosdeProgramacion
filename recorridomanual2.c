@@ -443,6 +443,56 @@ void recorridoManual(){
 	while(decision>3 || decision<1); //En caso de ingresar valores no validos, no se ejecuta ninguna accion
 }
 
+
+//Funcion que ejecuta el menu con el cual va a interactuar el usuario
+
+void menu(){
+	do{
+		printf(" ------------------------------------------------------------- ");
+		printf("|                                                             |");
+		printf("|                         MENU                                |");
+		printf("|                                                             |");
+		printf("| 1. Ingresa tu mapa                                          |");
+		printf("| 2. Comprueba tu mapa                                        |");
+		printf("| 3. Recorrido automatico                                     |");
+		printf("| 4. Recorrido manual                                         |");
+		printf("| 5. No estoy segura si se me olvido algo                     |");
+		printf("| 6. Salir del juego                                          |");
+		printf("|                                                             |");
+		printf(" ------------------------------------------------------------- ");
+		printf(" Seleccione lo que quiere hacer:")
+		scanf("%d", &eleccion);
+		switch(eleccion){
+			case 1:
+				printf("Instruccion para ingresar el mapa")
+				/ funcion /
+				break;
+			case 2:
+				printf("Instruccion para comprobar el mapa")
+				/ funcion /
+				break;
+			case 3:
+				printf("Inicializando el recorrido automatico");
+				/ funcion /
+				break;
+			case 4:
+				printf("Inicializando el recorrido manual");
+				recorridoManual();
+				break;
+			case 5:
+				printf("Eso mismo")
+				/ funcion /
+				break;
+			case 6: 
+				printf("Adios!");
+				exit(0);
+
+		}
+	}
+
+}
+
+
 int main(){
-	recorridoManual();
+	menu();
 }
