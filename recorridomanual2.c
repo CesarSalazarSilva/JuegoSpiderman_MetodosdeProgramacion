@@ -7,8 +7,8 @@
 void copiaCiudad(char * dirMapaNuevo, int** mapa){
 	FILE * archivoRecorrido;
 	archivoRecorrido= fopen(dirMapaNuevo, "w");
-	for (int i=0; i< 10; i++){
-		for (int j=0; j< 10; j++){
+	for (int i=0; i< tamanio; i++){
+		for (int j=0; j< tamanio; j++){
 			fprintf(archivoRecorrido, "%d",mapa[i][j]);
 			fprintf(archivoRecorrido, " ");
 		}
@@ -21,8 +21,8 @@ void copiaCiudad(char * dirMapaNuevo, int** mapa){
 
 //Función que imprime la matriz de la ciudad actual
 void imprimeCiudad(int** matrz){
-	for (int i=0; i<10; i++){
-		for(int j=0; j<10; j++){
+	for (int i=0; i<tamanio; i++){
+		for(int j=0; j<tamanio; j++){
 			printf("%d\t", matrz[i][j]);
 		}
 		printf("\n");
@@ -59,40 +59,22 @@ int verificar(int ** matriz, int fila, int columna){
 
 //Funcion que ejecuta el recorrido manual de un juego nuevo
 
-void juegoNuevo(){
-		//Primero se lee la matriz de la ciudad generada
-	FILE * archivoOrigen;
-	char * dirMapa;
-	dirMapa= "mapaCiudad.txt";
+void juegoNuevo(int** matrizCiudad){
+	//Primero se lee la matriz de la ciudad generada
 	int caracter, fila, columna, verificador, aux;
 	int contadorEdificios=0;
 	char * inputDireccion;
 	inputDireccion="recorridoUsuario.txt";
 	int opcion;
-	archivoOrigen= fopen(dirMapa, "r");
-	if (archivoOrigen==NULL){
-		printf("Error con el archivo de ciudad, cerrando programa...");
-		exit(1);
-	}
-	int**matriz= (int**)malloc(sizeof(int*)*10);//ojo acá, es solo porque me falta la variable global
-	for (int i=0;i<10;i++){
-		matriz[i]=(int*)malloc(sizeof(int)*10);
-	}
-	for (int i=0;i<10;i++){
-		for (int j=0;j<10;){
-			caracter = fgetc(archivoOrigen);
-			if (caracter!=32 && caracter != 10){
-				caracter=caracter-48;
-				contadorEdificios= contadorEdificios + caracter;
-				matriz[i][j]=caracter;
-				j++;
-			}
+	for (int i=0;i<tamanio;i++){
+		for (int j=0;j<tamanio;j++){
+			caracter = matrizCiudad[i][j];
+			contadorEdificios=contadorEdificios+caracter;
 		}
-		caracter=fgetc(archivoOrigen);
 	}
 	//Luego se copia en el archivo que llevará el progreso del jugador registrando su última jugada
-	copiaCiudad(inputDireccion, matriz);
-	imprimeCiudad(matriz);
+	copiaCiudad(inputDireccion, matrizCiudad);
+	imprimeCiudad(matrizCiudad);
 	printf("Ingrese las coordenadas del punto [fila][columna] de donde quiere partir, considere que solo puede partir en aquellos puntos del mapa distintos a '0' :\n");
 	printf("Ingrese el numero de fila:\n");
 	scanf("%d", &fila);
@@ -100,14 +82,14 @@ void juegoNuevo(){
 	scanf("%d", &columna);
 	fila= fila-1;
 	columna= columna-1;
-	if (fila>10 || fila<0 || columna >10 || columna <0){
+	if (fila>tamanio || fila<0 || columna >tamanio || columna <0){
 		printf("Error, por favor ingrese un numero valido");
 	}else{
 		do{
 			contadorEdificios= contadorEdificios-1;
-			aux= matriz[fila][columna];
-			matriz[fila][columna]=aux-1;
-			imprimeCiudad(matriz);
+			aux= matrizCiudad[fila][columna];
+			matrizCiudad[fila][columna]=aux-1;
+			imprimeCiudad(matrizCiudad);
 			printf( "\n   1. Norte.");
         	printf( "\n   2. Sur.");
         	printf( "\n   3. Este.");
@@ -127,7 +109,7 @@ void juegoNuevo(){
 								scanf("%d", &opcion);
 							}else{
 								fila= fila-1;
-								int aux1= matriz[fila][columna];
+								int aux1= matrizCiudad[fila][columna];
 								if(aux1==0){
 									fila=fila+1;
 									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
@@ -138,10 +120,10 @@ void juegoNuevo(){
 								}else{
 									aux1= aux1-1;
 									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux1;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
+									matrizCiudad[fila][columna]= aux1;
+									copiaCiudad(inputDireccion, matrizCiudad);
+									imprimeCiudad(matrizCiudad);
+									verificador= verificar(matrizCiudad, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("\nHas quedado encerrado! GAME OVER.\n");
 										exit(0);
@@ -163,7 +145,7 @@ void juegoNuevo(){
 								scanf("%d", &opcion);
 							}else{
 								fila= fila+1;
-								int aux2= matriz[fila][columna];
+								int aux2= matrizCiudad[fila][columna];
 								if(aux2==0){
 									fila=fila-1;
 									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
@@ -174,10 +156,10 @@ void juegoNuevo(){
 								}else{
 									aux2= aux2-1;
 									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux2;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
+									matrizCiudad[fila][columna]= aux2;
+									copiaCiudad(inputDireccion, matrizCiudad);
+									imprimeCiudad(matrizCiudad);
+									verificador= verificar(matrizCiudad, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("\nHas quedado encerrado! GAME OVER.\n");
 										exit(0);
@@ -199,7 +181,7 @@ void juegoNuevo(){
 								scanf("%d", &opcion);
 							}else{
 								columna= columna+1;
-								int aux3= matriz[fila][columna];
+								int aux3= matrizCiudad[fila][columna];
 								if(aux3==0){
 									columna=columna-1;
 									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
@@ -210,10 +192,10 @@ void juegoNuevo(){
 								}else{
 									aux3= aux3-1;
 									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux3;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
+									matrizCiudad[fila][columna]= aux3;
+									copiaCiudad(inputDireccion, matrizCiudad);
+									imprimeCiudad(matrizCiudad);
+									verificador= verificar(matrizCiudad, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("\nHas quedado encerrado! GAME OVER.\n");
 										exit(0);
@@ -235,7 +217,7 @@ void juegoNuevo(){
 								scanf("%d", &opcion);
 							}else{
 								columna= columna-1;
-								int aux4= matriz[fila][columna];
+								int aux4= matrizCiudad[fila][columna];
 								if(aux4==0){
 									columna=columna-1;
 									printf("\nMovimiento invalido! Recuerda moverte por donde hayan numeros distintos a cero.");
@@ -246,10 +228,10 @@ void juegoNuevo(){
 								}else{
 									aux4= aux4-1;
 									contadorEdificios= contadorEdificios-1;
-									matriz[fila][columna]= aux4;
-									copiaCiudad(inputDireccion, matriz);
-									imprimeCiudad(matriz);
-									verificador= verificar(matriz, fila, columna);
+									matrizCiudad[fila][columna]= aux4;
+									copiaCiudad(inputDireccion, matrizCiudad);
+									imprimeCiudad(matrizCiudad);
+									verificador= verificar(matrizCiudad, fila, columna);
 									if (verificador == 1 && contadorEdificios !=0){
 										printf("\nHas quedado encerrado! GAME OVER.\n");
 										exit(0);
@@ -289,12 +271,12 @@ void juegoAnterior(){
 		printf("\nNo has iniciado ningun juego anteriormente, cerrando programa...");		
 		exit(1);
 	}
-	int ** matriz= (int**)malloc(sizeof(int*)*10);//ojo acá, es solo porque me falta la variable global
-	for (int i=0;i<10;i++){
-		matriz[i]=(int*)malloc(sizeof(int)*10);
+	int ** matriz= (int**)malloc(sizeof(int*)*tamanio);
+	for (int i=0;i<tamanio;i++){
+		matriz[i]=(int*)malloc(sizeof(int)*tamanio);
 	}
-	for (int i=0;i<10;i++){
-		for (int j=0;j<10;){
+	for (int i=0;i<tamanio;i++){
+		for (int j=0;j<tamanio;){
 			caracter = fgetc(archivoJuegoAnterior);
 			if (caracter!=32 && caracter != 10){
 				caracter=caracter-48;
@@ -315,7 +297,7 @@ void juegoAnterior(){
 	scanf("%d", &columna);
 	fila= fila-1;
 	columna= columna-1;
-	if (fila>10 || fila<0 || columna> 10 || columna<0){
+	if (fila>tamanio || fila<0 || columna> tamanio || columna<0){
 		printf("\nError, por favor ingrese un numero valido");
 	}else{
 		if (matriz[fila][columna] != 0){
@@ -495,7 +477,7 @@ void juegoAnterior(){
 }
 
 //Función que recibe la matriz de la ciudad actual, y da la opcion al usuario de hacer el recorrido manual
-void recorridoManual(){
+void recorridoManual(int ** matrizCiudad){
 	int decision;
 	//Entrando a la función, pregunta si continua con el mapa anterior o empieza uno nuevo
 	do{
@@ -511,7 +493,7 @@ void recorridoManual(){
 
            	case 2: 
 				printf("\nIniciando Juego Nuevo...");
-				juegoNuevo();
+				juegoNuevo(matrizCiudad);
         }
 	}
 	while(decision>3 || decision<1); //En caso de ingresar valores no validos, no se ejecuta ninguna accion
@@ -552,7 +534,7 @@ void menu(){
 				break;
 			case 4:
 				printf("Inicializando el recorrido manual");
-				recorridoManual();
+				recorridoManual(NOMBRE DE LA matriz);
 				break;
 			case 5:
 				printf("Eso mismo");
