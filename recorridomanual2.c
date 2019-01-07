@@ -27,6 +27,7 @@ void imprimeCiudad(int** matrz){
 		}
 		printf("\n");
 	}
+	free(matrz);
 }
 
 
@@ -474,6 +475,7 @@ void juegoAnterior(){
 		}
 	}
 	fclose(archivoJuegoAnterior);
+	free(matrizCiudad);
 }
 
 //Función que recibe la matriz de la ciudad actual, y da la opcion al usuario de hacer el recorrido manual
