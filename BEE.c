@@ -168,36 +168,93 @@ int Anterior(estado * lista,int largolista,estado Estadofinal){
 //Funcion que entrega un arreglo con la solucion de pasos a seguir.
 //Entrada : El arreglo de los estados cerrados para buscar el camino a devolver y el estado Final.  
 //Salida  : Un arreglo con las instruciones para salir.
-void mostrarsolucion(estado * lista, int largolista, estado Estadofinal){
+char * mostrarsolucion(estado * lista, int largolista, estado Estadofinal){
+	int contador = 0;
+	char * Solucion = (char*)malloc(contador*sizeof(char));
 	if (Estadofinal.dedondeviene == 'N'){
+		Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+		Solucion[contador] = 'S';
+		contador+= 1;
 		printf("\n Ve hacia el : Sur");
 	}
 	if (Estadofinal.dedondeviene == 'S'){
+		Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+		Solucion[contador] = 'N';
+		contador+= 1;
 		printf("\n Ve hacia el : Norte");
 	}
 	if (Estadofinal.dedondeviene == 'O'){
+		Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+		Solucion[contador] = 'E';
+		contador+= 1;
 		printf("\n Ve hacia el : Este");
 	}
 	if (Estadofinal.dedondeviene == 'E'){
+		Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+		Solucion[contador] = 'O';
+		contador+= 1;
 		printf("\n Ve hacia el : Oeste");
 	}
 	int ultimo = Anterior(lista,largolista,Estadofinal);
     while(lista[ultimo].dedondeviene != 'I'){
         if (lista[ultimo].dedondeviene == 'N'){
+        	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+			Solucion[contador] = 'S';
+			contador+= 1;
             printf("\n Ve hacia el : Sur");
         }
         if (lista[ultimo].dedondeviene == 'S'){
+        	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+			Solucion[contador] = 'N';
+			contador+= 1;
             printf("\n Ve hacia el : Norte");
         }
         if (lista[ultimo].dedondeviene == 'E'){
+        	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+			Solucion[contador] = 'O';
+			contador+= 1;
             printf("\n Ve hacia el : Oeste");
         }
         if (lista[ultimo].dedondeviene == 'O'){
+        	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+			Solucion[contador] = 'E';
+			contador+= 1;
             printf("\n Ve hacia el : Este");
         }
         ultimo = Anterior(lista,largolista,lista[ultimo]);
     }
-    printf("\n Este es el inicio I(0,5) la instruccion de arriba te llevará a la salida !! \n");
+    FILE * archivo;
+
+    archivo = fopen("Salida.txt","w");
+    Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+	Solucion[contador] = lista[ultimo].py+ '0';
+	contador+= 1;
+	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+	Solucion[contador] = lista[ultimo].px+ '0';
+	contador+= 1;
+	Solucion = (char*)realloc(Solucion,(contador+1)*sizeof(int*));
+	Solucion[contador] = 'I';
+	contador+= 1;
+    printf("\n Este es el inicio I(%d,%d) la instruccion de arriba te llevará a la salida !! \n",lista[ultimo].px,lista[ultimo].py);
+    char parD = '(';
+    char parI = ')';
+    char esp = ' ';
+    char com = ',';
+    fwrite(&Solucion[contador-1],sizeof(char),1,archivo);
+    fwrite(&parD,sizeof(char),1,archivo);
+    fwrite(&Solucion[contador-2],sizeof(char),1,archivo);
+    fwrite(&com,sizeof(char),1,archivo);
+    fwrite(&Solucion[contador-3],sizeof(char),1,archivo);
+    fwrite(&parI,sizeof(char),1,archivo);
+    fwrite(&esp,sizeof(char),1,archivo);
+
+    for (int i = contador-4; -1 < i; --i)
+    {
+    	fwrite(&Solucion[i],sizeof(char),1,archivo);
+    	fwrite(&com,sizeof(char),1,archivo);
+    	printf("%c, ",Solucion[i]);
+    }
+    printf("\n");
 }
 
 //Revisa si el estado a Analizar contiene 2 conjuntos separados de edificios para asi ignorar estos casos dado que no hay solucion para ellos.
@@ -349,7 +406,7 @@ int BEE(int ** Matriz,int fila,int columna, int posicionIX,int posicionIY){
 	}
 	//Condicion que no encontramos solucion 
 	if(canAbiertos == 0){
-		printf("No encontré solucion con el inicio en %d,%d lo generaré en otro punto \n", posicionIX,posicionIY);
+		printf("No encontré solucion con el inicio en %d,%d lo generaré en otro punto \n", posicionIY,posicionIX);
 		return 0 ; 
 	}
 }
