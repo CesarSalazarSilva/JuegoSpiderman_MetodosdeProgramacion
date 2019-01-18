@@ -27,7 +27,7 @@ struct estado{
 //Funcion que lee una matriz de un archivo.
 //Entrada : El nombre de el archivo.
 //Salida  : La matriz del archivo. 
-int ** ObtenerMatriz(){
+int ** ObtenerMatriz(int largo){
 	//Primero se lee la matriz de la ciudad guardada en el juego anterior
 	FILE * archivoJuegoAnterior;
 	int caracter, fila, columna, verificador, aux;
@@ -40,12 +40,12 @@ int ** ObtenerMatriz(){
 		printf("\n No hay ningun archivo con el nombre: ciudad.txt");		
 		exit(1);
 	}
-	int ** matriz= (int**)malloc(sizeof(int*)*tamanio);
-	for (int i=0;i<tamanio;i++){
-		matriz[i]=(int*)malloc(sizeof(int)*tamanio);
+	int ** matriz= (int**)malloc(sizeof(int*)*largo);
+	for (int i=0;i<largo;i++){
+		matriz[i]=(int*)malloc(sizeof(int)*largo);
 	}
-	for (int i=0;i<tamanio;i++){
-		for (int j=0;j<tamanio;){
+	for (int i=0;i<largo;i++){
+		for (int j=0;j<largo;){
 			caracter = fgetc(archivoJuegoAnterior);
 			if (caracter!=32 && caracter != 10){
 				caracter=caracter-48;

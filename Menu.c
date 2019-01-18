@@ -104,7 +104,7 @@ int main(){
 
 		    case '3'  :
 		    	system("clear");
-		    	printf("Estoy preparando tu juego.\n\n");
+		    	printf("Estoy preparando tu juego... \n\n");
 		    	recorridoManual(ciudad);
 		    	printf("Presione Enter para retornar al MENU. \n");
 				getchar();
@@ -113,11 +113,15 @@ int main(){
 
 		    case '4'  :
 		    	system("clear");
+		      	printf("Mueva el archivo de la ciudad a la carpeta de Menu.c y renombrelo como \"ciudad.txt\".\n");
+		      	printf("\nCuando este listo presione \"Enter\" para continuar \n\n");
 		      	printf("Creando el archivo con la ciudad codificada.\n\n");
-		      	nuevaciudad = ObtenerMatriz();
+				getchar();
+				getchar();
 		      	int n;
 		      	printf("Ingrese el tamano de la ciudad : ");
 		      	scanf("%d", &n);
+		      	nuevaciudad = ObtenerMatriz(n);
 		      	Inverso(nuevaciudad,n);
 		      	printf("\nSe ha codificado la ciudad, presione \"Enter\" para continuar \n");
 				getchar();
