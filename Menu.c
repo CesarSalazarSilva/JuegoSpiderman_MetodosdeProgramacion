@@ -12,14 +12,13 @@
 int tamanio;
 
 int main(){
-	int ** ciudad;
-	int ver, i;
-	int aux;
+	int ** ciudad,** inicio;
 	int * iniSol;
-	int ** inicio;
+	int ver,i,aux;
+	char desicion,a;
 	printf("Estoy decodificando el archivo...\n\n");
 	ciudad = generarCiudad("entrada.txt", &tamanio);
-	char desicion,a;
+	
 	do{
 		system("clear");
 		printf("\n ------------------------------------------------------------- \n");
@@ -46,13 +45,12 @@ int main(){
 					free(ciudad[i]);
 				}
 				free(ciudad);
-
 				exit(0);
+
 		    case '1'  :
 		    	system("clear");
-		    	printf("Verifico si hay solucion con el mapa entregado.\n\n");
+		    	printf("\n Verificando existencia de solucion en el la ciudad entregada ...\n\n");
 		    	aux = 0;
-				
 				inicio = IniciosPosibles(ciudad,&aux,tamanio,tamanio);
 				iniSol = crearconjuntosolucion(aux);
 				for (int i = 0; i < aux; ++i){
@@ -69,14 +67,14 @@ int main(){
 						printf("\n Hay solucion en : %d,%d \n",inicio[i][0]+1,inicio[i][1]+1);
 					}					
 				}
-
 				if (ver==0){
 					printf("\n No hay solucion\n");
-				}				
+				}	
 				printf("Presione Enter para continuar \n");
-				fflush(stdin);
 				getchar();
-		    	break; /* optional */
+				getchar();
+		    	break; 
+
 		    case '2'  :
 		    	system("clear");
 				aux = 0;
@@ -96,37 +94,37 @@ int main(){
 						printf("\n Hay solucion en : %d,%d \n",inicio[i][0]+1,inicio[i][1]+1);
 					}					
 				}
-
 				if (ver==0){
 					printf("\n No hay solucion\n");
 				}			
 				printf("Presione Enter para continuar \n");
-				fflush(stdin);
 				getchar();
-		    	break; /* optional */
+				getchar();
+		    	break; 
+
 		    case '3'  :
 		    	system("clear");
 		    	printf("Estoy preparando tu juego.\n\n");
 		    	recorridoManual(ciudad);
 		    	printf("Presione Enter para continuar \n");
-				fflush(stdin);
 				getchar();
-		    	break; /* optional */
+				getchar();
+		    	break; 
 
 		    case '4'  :
 		    	system("clear");
 		      	printf("Creando el archivo con la ciudad codificada.\n\n");
 		      	Inverso(ciudad,tamanio);
 		      	printf("Presione Enter para continuar \n");
-				fflush(stdin);
 				getchar();
-		      	break; /* optional */
-		   /* you can have any number of case statements */
+				getchar();
+		      	break; 
+
 			default :
 				system("clear"); 
 				printf("Por favor ingrese una opción válida.");
 				printf("Presione Enter para continuar \n");
-				fflush(stdin);
+				getchar();
 				getchar();
 				break;
 		}

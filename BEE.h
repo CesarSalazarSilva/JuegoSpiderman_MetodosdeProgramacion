@@ -410,7 +410,7 @@ int BEE(int ** Matriz,int fila,int columna, int posicionIX,int posicionIY,int en
 	}
 	//Condicion que no encontramos solucion 
 	if(canAbiertos == 0){
-		printf("No encontré solucion con el inicio en %d,%d lo generaré en otro punto \n", posicionIY+1,posicionIX+1);
+		printf("No encontré solucion con el inicio en %d,%d lo generaré en otro punto \n",posicionIX+1,posicionIY+1);
 		return 0 ; 
 	}
 }
