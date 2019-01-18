@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//POR MUY ORGULLOSO QUE ESTE DE ESTA FUNCION AL FINAL NO LA USARE
+//definición de variable global
+int tamanio;
+
+
 /*Funcion recursiva que le suma 1 a la combinacion actual, al menos que se llegue a su limite, en tal caso
 se cambia a 0 y aplica la misma funcion a la sigiuente linea, recursivamente
 Entrada: arreglo de enteros con los limites de las combinaciones, arreglo de enteros con la combinacion actual,
-         entero con el tamanio de la ciudad, y un entero con la posicion actual*/
-void sigCombinacion(int * combFinal, int * combActual, int tamanio, int pos){
+         entero con el tamanio de la ciudad, un entero con la posicion actual,
+         y un entero que indica con que columna debe partir el espacio solucion*/
+void sigCombinacion(int * combFinal, int * combActual, int tamanio, int pos, int colInicial){
 	//caso base: el numero de la pos actual aun no llega al limite de combinaciones
 	if(combFinal[pos]-1 != combActual[pos]){
 		combActual[pos] += 1;
@@ -16,23 +20,53 @@ void sigCombinacion(int * combFinal, int * combActual, int tamanio, int pos){
 	else{
 		//primero se verifica si ya se llego al final
 		if (combActual[tamanio-1] == combFinal[tamanio-1]) return;
-		combActual[pos] = 0;
+		combActual[pos] = colInicial;
 		//se pasa a la siguiente linea
-		sigCombinacion(combFinal, combActual, tamanio, pos+1);
+		sigCombinacion(combFinal, combActual, tamanio, pos+1, colInicial);
 		return;
 	}
+}
+
+/* Funcion que calcula el factorial de un entero positivo
+Entrada: un numero entero
+Salida: el factorial de la entrada*/
+double factorial(int a){
+    int i;
+    double resultado = 1;
+    if (a>0){
+        for (i=1; i<=a; ++i){
+            resultado *= i;
+        }
+    }
+    return resultado;
+}
+
+
+/* Funcion que calcula las posibles combinaciones de b elementos en a espacios ordenados
+Entrada: numeros a y b que se quieren combinar de la manera "a sobre b"
+Salida: numero entero con el resultado de dicha combinacion*/
+int combinaciones(int a, int b){
+    int resultado;
+    /*resultado = a!/(b!(a-b)!*/
+    double numerador, denominador;
+    numerador = factorial(a);
+    denominador = factorial(b)*factorial(a-b);
+    resultado = numerador/denominador;
+    return resultado;
 }
 
 /*Funcion que recibe al archivo de la ciudad codificado para procesar el segmento de las filas
 Entrada: puntero a un archivo/tamanio de la ciudad
 Salida: matriz con las filas mostradas en el archivo*/
-int ** procesarFilas(FILE * archivo, int tamanio){
+int ** procesarFilas(FILE * archivo, long int * combTotales, int tamanio, int *listCombinaciones){
 
 	int ** filas;
 	filas = (int**)malloc(sizeof(int*)*tamanio);
+	*combTotales = 1;
 
 	//aqui se guarda la parte de las filas como matriz de enteros
-	int i, j, cantEdif, cantEdifFila;
+	int i, j, cantEdif, cantEdifFila, espaciosLibres, combinaciones;
+
 	for(i=0; i<tamanio; i++){
 
 		//se guarda el primer numero de las filas para saber cuantos edificios hay
@@ -46,6 +80,19 @@ int ** procesarFilas(FILE * archivo, int tamanio){
 			 fscanf(archivo, "%d ", &filas[i][j]);
 			 cantEdifFila++;
 		}
+		for(j = cantEdif+1; j<tamanio+1; j++){
+			filas[i][j] = 0;
+		}
+
+		//se calculan las combinaciones posibles de edificios por fila
+		espaciosLibres = tamanio - cantEdifFila;
+		//como siempre es 1 bloque de edificios seguidos, las posibles combinaciones son bastante simples:
+		combinaciones = espaciosLibres+1;
+		//editamos los valores de la lista de combinaciones (si, tambien cambian en las otras funciones)
+		listCombinaciones[i] = combinaciones;
+		//se calcula la suma total de combinaciones a hacer
+		*combTotales *= combinaciones;
+		//printf("combinaciones de la fila: %d\n\n", listCombinaciones[i]);
 	}
 
 	int prueba;
@@ -84,8 +131,10 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 
 		//caso de columna vacia
 		if (linea[0] == '0'){
-			colNumeros [i][0] = 0;
-			colEdifSeguidos[i][0] = 0;
+			for (j=0; j < tamanio; j++){
+				colNumeros [i][j] = 0;
+				colEdifSeguidos[i][j] = 0;
+			}
 		}
 		else{
 			for(j=0; j < tamanio*2; j+=2){
@@ -154,9 +203,154 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 	return;
 }
 
-//funcion que genera la matriz de la ciudad a partir de un archivo (usando busqueda en espacio de soluciones)
-//Entrada: nombre del archivo y puntero del entero representando el tamanio de la ciudad
-//Salida: matriz con la ciudad en el formato pedido por el enunciado
+/*Función que mejora la posición de partida de la lista de combinaciones y la lista de combinación actual,
+además asigna una variable que recuerda la columna de la que se debe partir la combinatoria
+Entrada: lista de combinaciones finales, lista de combinación actual, matriz de restricción de columnas, entero col
+Salida: void*/
+void mejorarComb(int * combFinal, int * combPartida, int ** restriccion, int *primeraCol, int *ultimaCol, int tamanio){
+	int probarFunc = 1;
+	int i;
+
+	if(probarFunc == 0){
+		printf("-----------------------PRE FUNCION-----------------------\n");
+		printf("Comb Actual:\n");
+		for(i = 0; i<tamanio; i++){
+			printf("%d ", combPartida[i]);
+		}
+		printf("\nComb Final:\n");
+		for(i = 0; i<tamanio; i++){
+			printf("%d ", combFinal[i]);
+		}
+	}
+
+	printf("\n");
+	//caso para la columna de la que empieza
+	*primeraCol = 0;
+	if (restriccion[0][0] == 0){
+		for(i = 1; i<tamanio; i++){
+			if(restriccion[i][0] != 0){
+				*primeraCol = i;
+				i = tamanio;
+
+			}
+		}
+	}
+	else *primeraCol = 0;
+	for(i = 0; i<tamanio; i++){
+		combPartida[i] = *primeraCol;
+	}
+	//caso para la columna final
+	*ultimaCol = 0;
+	if(restriccion[tamanio-1][0] == 0){
+		for(i = tamanio-1; i>=0; i--){
+			if(restriccion[i][0] != 0){
+				*ultimaCol = i;
+				i = -1;
+			}
+		}
+	}
+	else *ultimaCol = tamanio-1;
+	for(i = 0; i<tamanio; i++){
+		combFinal[i] -= tamanio + - 1 - *ultimaCol;
+	}
+
+	if(probarFunc == 0){
+		printf("-----------------------POST FUNCION----------------------\n");
+		printf("primeraCol: <%d>\n", *primeraCol);
+		printf("posFinal: <%d>\n", *ultimaCol);
+		printf("Comb Actual:\n");
+		for(i = 0; i<tamanio; i++){
+			printf("%d ", combPartida[i]);
+		}
+		printf("\nComb Final:\n");
+		for(i = 0; i<tamanio; i++){
+			printf("%d ", combFinal[i]);
+		}
+		printf("\n");
+	}
+	return;
+}
+
+/*Función que verifica si ya se procesaron todas las ciudades posibles
+Entrada: matriz con una ciudad, tamanio de la ciudad, columna final
+Salida: 0 si se llegó a la última combinación, 1 en el caso contrario*/
+int verificarFinComb(int ** ciudad, int tamanio, int ultimaCol){
+	int i;
+	int fin = 0;
+	for(i = 0; i < tamanio; i++){
+		if (ciudad[i][ultimaCol] == 0){
+			fin = 1;
+			i = tamanio; 
+		}
+	}
+	//caso en que se llega a la ultima combinacion
+	if (fin == 0){
+		return 1;
+	}
+	//caso en que aun no se llega al final
+	else {
+		return 0;
+	}
+}
+
+/*Función que verifica si la ciudad es válida usando las condiciones de edificios seguidos que cada columna tiene
+*/
+int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
+	//primero se hace una copia de la ciudad actual editarla
+	int ** ciudadCopia = (int**)malloc(sizeof(int*)*tamanio);
+	int i, j;
+	for(i = 0; i<tamanio; i++){
+		ciudadCopia[i] = (int*)malloc(sizeof(int)*tamanio);
+		for(j = 0; j<tamanio; j++){
+			ciudadCopia[i][j] = ciudadActual[i][j];
+		}
+	}
+	//valida = 0 para ciudad válida, valida = 1 para ciudad inválida
+	int valida = 0;
+	int seguidos;
+
+	//r = restricción, c = ciudad
+	int ri, rj, ci, cj;
+	for(ri = 0; ri < tamanio; ri++){
+		for(rj = 0; rj < tamanio; rj++){
+			seguidos = restriccion[ri][rj];
+			
+			//aquí se revisará si la ciudad es válida con el "seguidos"
+			for(ci = 0; ci<tamanio; ci++){
+				//ri = columna actual de la ciudad
+				//si la columna debería estar vacía y no lo está, se invalida la ciudad
+				if(seguidos == 0 && rj == 0 && ciudadCopia[ci][ri] != 0){
+					valida = 1;
+					ri = tamanio;
+					rj = tamanio;
+					ci = tamanio;
+				}
+				//segunda condicion soon tm
+
+
+			}
+			//si ya se leyó un cero, pasamos a la siguiente fila inmediatamente para ahorrar procesos
+			if (seguidos == 0) rj == tamanio;
+				
+		}
+	}
+
+	//liberación de memoria de la copia
+	for(i = 0; i<tamanio; i++){
+		free(ciudadCopia[i]);
+	}
+	free(ciudadCopia);
+	//caso en que la ciudad no es invalidada
+	if (valida == 0){
+		return valida;
+	}
+	//caso en que la ciudad SI ES inválida
+	else return valida;
+}
+
+/*Función que genera la matriz de la ciudad a partir de un archivo (usando busqueda en espacio de soluciones)
+Entrada: nombre del archivo y puntero del entero representando el tamanio de la ciudad
+Salida: matriz con la ciudad en el formato pedido por el enunciado*/
 int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	FILE *archPuntero;
 	archPuntero = fopen(nombreArchivo, "r");
@@ -176,10 +370,11 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	printf("tamanio de ciudad: %dx%d\n", *tamanio, *tamanio);
 
 
-	//****se creara el espacio de soluciones aqui****
 	//procesamiento de las filas
 	int ** filas;
-	filas = procesarFilas(archPuntero, *tamanio);
+	long int combTotales;
+	int * listCombinaciones = (int*)malloc(sizeof(int)*(*tamanio));
+	filas = procesarFilas(archPuntero, &combTotales, *tamanio, listCombinaciones);
 
 	//procesamiento de las columnas
 	int ** colNumeros;
@@ -189,35 +384,103 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	procesarColumnas(archPuntero, *tamanio, colNumeros, colEdifSeguidos);
 	fclose(archPuntero);
 
+	//----ESPACIO SOLUCIÓN----
+	//lista que parte con ceros y representa cada combinacion de cada ciudad
+	int * listCombinacionActual = (int*)malloc(sizeof(int)*(*tamanio));
+	long int i;
+	for(i = 0; i<*tamanio; i++)	listCombinacionActual[i] = 0;
+
+	//funcion para que se ignoren las columnas de ceros en el espacio solucion
+	int primeraColUsar, ultimaColUsar;
+	mejorarComb(listCombinaciones, listCombinacionActual, colNumeros, &primeraColUsar, &ultimaColUsar, *tamanio);
+
 	//creacion de tadas las ciudades posibles
 	int *** ciudadesPosibles = (int***)malloc(sizeof(int**)*1000); 
 	//RECORDAR: ver si se puede calcular esto en vez de dejar un numero al ojo
 
-	int i, j;
-		/*
-	for (i = 0; i<*tamanio; i++){
-		//creacion de una ciudad posible
-		int ** ciudadesPosibles = (int**)malloc(sizeof(int*)*(*tamanio)); 
-		for(j = 0; j< )
-		if (colNumeros[i])
-	}
-*/
+	int j, escrituraFilas;
+	//este contador avanza solo cuando la ciudad actual se verifica válida usando las pista de columnas
+	int contador = 0;
+	int primeraVez = 0;
+	//variable con la posicion a leer de la matriz de filas
+	int posFilas = 1;
+		
+	do{
+
+		//si la ciudad actual no es válida, se sobreescribirá ya que este contador no avanzará
+		/*if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio) == 0){
+			contador++;
+		}*/
+
+		printf("ciudad numero: %d\n", contador);
+		ciudadesPosibles[contador] = (int**)malloc(sizeof(int*)*(*tamanio));
+		//1 ciudad
+		for(i = 0; i < *tamanio; i++){
+			ciudadesPosibles[contador][i] = (int*)malloc(sizeof(int)*(*tamanio));
+			if (primeraVez == 0){
+				for(j = 0; j<*tamanio; j++){
+					ciudadesPosibles[contador][i][j] = 0;
+				}
+			}
+			//1 fila de 1 ciudad
+			for (j = 0; j < *tamanio; j++){
+
+				//para verificar si se debe seguir escribiendo ceros
+				if (j == listCombinacionActual[i])
+					escrituraFilas = 1;
+				//donde se escriben los ceros a la izquierda de la fila
+				if (escrituraFilas == 0)
+					ciudadesPosibles[contador][i][j] = 0;	
+				//donde se escriben los numeros de los edificios en la fila
+				if (escrituraFilas == 1){
+					if (filas[i][posFilas] == 0)
+						escrituraFilas = 2;
+					else{
+						ciudadesPosibles[contador][i][j] = filas[i][posFilas];
+						posFilas++;
+					}
+				}
+				//donde se escriben los ceros a la derecha de la fila
+				if (escrituraFilas == 2)
+					ciudadesPosibles[contador][i][j] = 0;
 
 
-	//salida temporal para que corra el programa, una matriz 5x5 rellena con 0-24 en orden
-	int** salidaWIP = (int**)malloc(sizeof(int*)*5);
-	int numero;
-	numero=0;
-	printf("Matriz:\n");
-	for (i=0; i<5; i++){
-		salidaWIP[i] = (int*)malloc(sizeof(int)*5);
-		for(j=0; j<5; j++){
-			salidaWIP[i][j] = numero;
-			printf("%d ", salidaWIP[i][j]);
-			numero++;
+				printf("%d ", ciudadesPosibles[contador][i][j]);
+			}
+			escrituraFilas = 0;
+			posFilas = 1;
+			printf("\n");
 		}
+		//esta funcion hace que se pase a la siguiente combinatoria
+		sigCombinacion(listCombinaciones, listCombinacionActual, *tamanio, 0, primeraColUsar);
 		printf("\n");
-	}
+		primeraVez = 1;
+
+	}while(verificarFinComb(ciudadesPosibles[contador], *tamanio, ultimaColUsar) == 0);
+
+
+
+	//salida temporal para que corra el programa
+	int** salidaWIP = (int**)malloc(sizeof(int*)*10);
+	int Matris[10][10] ={
+		{0,0,1,2,1,1,0,0,0,0},
+		{0,0,0,2,1,0,0,0,0,0},
+		{0,0,1,2,0,0,0,0,0,0},
+		{0,0,0,1,1,1,2,1,0,0},
+		{0,0,0,0,0,1,1,0,0,0},
+		{0,0,0,1,2,1,0,0,0,0},
+		{0,0,0,0,1,0,0,0,0,0},
+		{0,0,1,2,2,0,0,0,0,0},
+		{0,0,0,1,3,3,2,0,0,0},
+		{0,0,0,0,2,2,0,0,0,0}
+		};
+
+	for (i=0; i<10; i++){
+		salidaWIP[i] = (int*)malloc(sizeof(int)*10);
+		for(j=0; j<10; j++){
+			salidaWIP[i][j] = Matris[i][j];
+		}
+}
 
 	//liberacion de memoria de la matriz con la primera mitad del texto
 	//pofa no lo olvides xd
@@ -233,13 +496,19 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 
 int main(){
 	int ** ciudad;
-	int tamanio;
 	ciudad = generarCiudad("entrada.txt", &tamanio);
-	printf("ciudad [0][0] en main: <%d>\n", ciudad[0][0]);
+
+	printf("Prueba salida ciudad en main:\n");
+	int i, j;
+	for(i = 0; i < tamanio; i++){
+		for(j = 0; j < tamanio; j++){
+			printf("%d ", ciudad[i][j]);
+		}
+		printf("\n");
+	}
 	
 	//liberacion de la memoria usada por la matriz
-	int i;
-	for(i=0; i<5; i++){//CAMBIAR EL 5 CUADNO LA CIUDAD SE DEVUELVA BIEN
+	for(i=0; i<10; i++){//CAMBIAR EL 10 CUADNO LA CIUDAD SE DEVUELVA BIEN
 		free(ciudad[i]);
 	}
 	free(ciudad);
@@ -249,4 +518,4 @@ int main(){
 }
 
 //no olvidar:
-//arreglar el 5 del ultimo free
+//arreglar el 10 del ultimo free
