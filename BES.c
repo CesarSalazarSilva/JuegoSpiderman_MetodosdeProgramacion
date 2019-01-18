@@ -428,15 +428,16 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	int primeraVez = 0;
 	//variable con la posicion a leer de la matriz de filas
 	int posFilas = 1;
-		
+	
+	printf("Ciudades Encontradas: %d\n", contador);
 	do{
 
 		//si la ciudad actual no es válida, se sobreescribirá ya que este contador no avanzará
 		if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio) == 0){
 			contador++;
+			printf("Ciudades Encontradas: %d\n", contador);
 		}
 
-		printf("ciudad numero: %d\n", contador);
 		ciudadesPosibles[contador] = (int**)malloc(sizeof(int*)*(*tamanio));
 		//1 ciudad
 		for(i = 0; i < *tamanio; i++){
