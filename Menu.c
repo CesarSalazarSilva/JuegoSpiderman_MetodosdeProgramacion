@@ -6,13 +6,13 @@
 
 #include "BEE.h"
 #include "BES.h"
-#include "Inverso.h"
-#include "recorridomanual.h"
+#include "BInverso.h"
+#include "Brecorridomanual.h"
 
 int tamanio;
 
 int main(){
-	int ** ciudad,** inicio;
+	int ** ciudad,** inicio,** nuevaciudad;
 	int * iniSol;
 	int ver,i,aux;
 	char desicion,a;
@@ -70,7 +70,7 @@ int main(){
 				if (ver==0){
 					printf("\n No hay solucion\n");
 				}	
-				printf("Presione Enter para continuar \n");
+				printf("Presione Enter para retornar al MENU.  \n");
 				getchar();
 				getchar();
 		    	break; 
@@ -97,7 +97,7 @@ int main(){
 				if (ver==0){
 					printf("\n No hay solucion\n");
 				}			
-				printf("Presione Enter para continuar \n");
+				printf("Presione Enter para retornar al MENU. \n");
 				getchar();
 				getchar();
 		    	break; 
@@ -106,7 +106,7 @@ int main(){
 		    	system("clear");
 		    	printf("Estoy preparando tu juego.\n\n");
 		    	recorridoManual(ciudad);
-		    	printf("Presione Enter para continuar \n");
+		    	printf("Presione Enter para retornar al MENU. \n");
 				getchar();
 				getchar();
 		    	break; 
@@ -114,8 +114,12 @@ int main(){
 		    case '4'  :
 		    	system("clear");
 		      	printf("Creando el archivo con la ciudad codificada.\n\n");
-		      	Inverso(ciudad,tamanio);
-		      	printf("Presione Enter para continuar \n");
+		      	nuevaciudad = ObtenerMatriz();
+		      	int n;
+		      	printf("Ingrese el tamano de la ciudad : ");
+		      	scanf("%d", &n);
+		      	Inverso(nuevaciudad,n);
+		      	printf("\nSe ha codificado la ciudad, presione \"Enter\" para continuar \n");
 				getchar();
 				getchar();
 		      	break; 
@@ -123,7 +127,7 @@ int main(){
 			default :
 				system("clear"); 
 				printf("Por favor ingrese una opción válida.");
-				printf("Presione Enter para continuar \n");
+				printf("Presione Enter para continuar. \n");
 				getchar();
 				getchar();
 				break;

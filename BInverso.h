@@ -5,12 +5,14 @@
 
 int tamanio;
 
+//Funcion que crea el archivo codificado de la ciudad.
+//Entrada : Un arreglo a codificar, su largo.
+//Salida  : Un archivo de nombre SalidaInverso.txt con la ciudad codificada.
 int Inverso(int ** ciudad, int largo){
 	FILE * archivo;
 	archivo = fopen("SalidaInverso.txt","w");
 	//Se ingresa al documento el tamano de la ciudad
 	fprintf(archivo,"%d\n", largo );
-
 	//Se recorre las filas de la ciudad 
 	for (int i = 0; i < largo; ++i){
 		//Contador de conjuntos
@@ -49,9 +51,7 @@ int Inverso(int ** ciudad, int largo){
 			fprintf(archivo, "0");
 			fprintf(archivo, "\n");
 		}
-		
 	}
-
 	//Se recorre las columnas de la ciudad 
 	for (int i = 0; i < largo; ++i){
 		//Contador de conjuntos
@@ -90,7 +90,6 @@ int Inverso(int ** ciudad, int largo){
 			fprintf(archivo, "0");
 			fprintf(archivo, "\n");
 		}
-		
 	}
 	fclose(archivo); 
 	return 0;

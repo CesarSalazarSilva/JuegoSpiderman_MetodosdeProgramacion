@@ -24,6 +24,41 @@ struct estado{
 	char dedondeviene;
 };
 
+//Funcion que lee una matriz de un archivo.
+//Entrada : El nombre de el archivo.
+//Salida  : La matriz del archivo. 
+int ** ObtenerMatriz(){
+	//Primero se lee la matriz de la ciudad guardada en el juego anterior
+	FILE * archivoJuegoAnterior;
+	int caracter, fila, columna, verificador, aux;
+	int contadorEdificios=0;
+	char * inputDireccion;
+	inputDireccion="ciudad.txt";
+	int opcion;
+	archivoJuegoAnterior= fopen(inputDireccion, "r");
+	if (archivoJuegoAnterior==NULL){
+		printf("\n No hay ningun archivo con el nombre: ciudad.txt");		
+		exit(1);
+	}
+	int ** matriz= (int**)malloc(sizeof(int*)*tamanio);
+	for (int i=0;i<tamanio;i++){
+		matriz[i]=(int*)malloc(sizeof(int)*tamanio);
+	}
+	for (int i=0;i<tamanio;i++){
+		for (int j=0;j<tamanio;){
+			caracter = fgetc(archivoJuegoAnterior);
+			if (caracter!=32 && caracter != 10){
+				caracter=caracter-48;
+				contadorEdificios= contadorEdificios + caracter;
+				matriz[i][j]=caracter;
+				j++;
+			}
+		}
+		caracter=fgetc(archivoJuegoAnterior);
+	}
+	return matriz;
+}
+
 //Funcion que crea un estado
 //Entrada : Id actual del estado a crear, id del estado del que viene , posicionx, posiciony en este estado, mapa anterior.
 //Salida  : Estado nuevo en base a los parametros entregados. 
