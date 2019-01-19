@@ -110,13 +110,20 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 		}
 		else{
 			for(j=0; j < tamanio*2; j+=2){
-				//caso en que solo haya 1 edificio en la columna
+				//caso en que solo haya 1 bloque de edificios en la fila
 				if(j==0 && linea[1] != '-'){
 					//truco para transformar un char del 0 al 9 en int
 					aux = linea[0] - '0';
 					colEdifSeguidos[i][0] = aux;
-					aux = linea[2] - '0';
-					colNumeros[i][0] = aux;
+					for(k = 2; k < tamanio*2+1; k+=2){
+						if(k < colEdifSeguidos[i][0]*2+1){
+							aux = linea[k] - '0';
+							colNumeros[i][k/2-1] = aux;
+						}
+						else{
+							colNumeros[i][k/2-1] = 0;
+						}
+					}
 				}
 				//caso para contar cuantos edificios seguidos hay
 				else if (linea[j+1] == '-' || (j>0 && linea[j-1] == '-')){
@@ -346,10 +353,7 @@ Entrada: el espacio solución (triple puntero), la matriz de restricción (núme
          entero con la cantidad de ciudades en el espacio solución, y el un entero con el tamanio de las ciudades
 Salida: el puntero de la matriz final a entregar por la BES*/
 int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadCiu, int tamanio){
-	if (cantidadCiu == 0){
-		printf("No se ha encontrado una ciudad que cumpla las restricciones. Retornando las última ciudad vista...\n");
-		return espacioSol[0];
-	}
+
 	//la ciudad parte como válida, y cuando se no se invalide alguna al verificarla se guarda y retorna
 	int valida = 0;
 	//r = restricción, es = espacio de soluciones
@@ -423,7 +427,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	//se guarda el primer numero del archivo
 	//ojo que el espacio en "%d " es importante para pasar a la siguiente linea
 	fscanf(archPuntero, "%d ", tamanio);
-	printf("Tamaño de la ciudad: %dx%d\n", *tamanio, *tamanio);
+	printf("Largo/Ancho de la ciudad detectado: %dx%d\n", *tamanio, *tamanio);
 
 
 	//procesamiento de las filas
@@ -459,13 +463,13 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	int primeraVez = 0;
 	//variable con la posicion a leer de la matriz de filas
 	int posFilas = 1;
-	printf("Ciudades Posibles Encontradas: %d\n", contador+1);
+	printf("Se ha comenzado la busqueda del edificio...\n");
 	do{
 
 		//si la ciudad actual no es válida, se sobreescribirá ya que este contador no avanzará
 		if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio) == 0){
 			contador++;
-			printf("Ciudades Posibles Encontradas: %d\n", contador+1);
+			printf("Ciudades Posibles Encontradas: %d\n", contador);
 		}
 
 		
