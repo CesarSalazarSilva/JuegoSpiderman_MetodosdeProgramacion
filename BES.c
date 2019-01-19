@@ -27,34 +27,6 @@ void sigCombinacion(int * combFinal, int * combActual, int tamanio, int pos, int
 	}
 }
 
-/* Funcion que calcula el factorial de un entero positivo
-Entrada: un numero entero
-Salida: el factorial de la entrada*/
-double factorial(int a){
-    int i;
-    double resultado = 1;
-    if (a>0){
-        for (i=1; i<=a; ++i){
-            resultado *= i;
-        }
-    }
-    return resultado;
-}
-
-
-/* Funcion que calcula las posibles combinaciones de b elementos en a espacios ordenados
-Entrada: numeros a y b que se quieren combinar de la manera "a sobre b"
-Salida: numero entero con el resultado de dicha combinacion*/
-int combinaciones(int a, int b){
-    int resultado;
-    /*resultado = a!/(b!(a-b)!*/
-    double numerador, denominador;
-    numerador = factorial(a);
-    denominador = factorial(b)*factorial(a-b);
-    resultado = numerador/denominador;
-    return resultado;
-}
-
 /*Funcion que recibe al archivo de la ciudad codificado para procesar el segmento de las filas
 Entrada: puntero a un archivo/tamanio de la ciudad
 Salida: matriz con las filas mostradas en el archivo*/
@@ -97,7 +69,7 @@ int ** procesarFilas(FILE * archivo, long int * combTotales, int tamanio, int *l
 
 	int prueba;
 	//parte para probar filas, cambiar el numero para no imprmir
-	prueba = 0;
+	prueba = 1;
 	if (prueba == 0){
 		printf("--------------------\nPrueba Filas\n");
 		for(i=0; i<tamanio; i++){
@@ -177,7 +149,7 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 	}
 	//parte para probar colNumeros, cambiar el numero para no imprmir
 	int prueba;
-	prueba = 0;
+	prueba = 1;
 	if (prueba == 0){
 		printf("--------------------\nPrueba colNumeros\n");
 		for(i=0; i<tamanio; i++){
@@ -189,7 +161,7 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 	printf("--------------------\n");
 	}
 	//parte para probar colEdifSeguidos , cambiar el numero para no imprmir
-	prueba = 0;
+	prueba = 1;
 	if (prueba == 0){
 		printf("--------------------\nPrueba colEdifSeguidos\n");
 		for(i=0; i<tamanio; i++){
@@ -294,7 +266,8 @@ int verificarFinComb(int ** ciudad, int tamanio, int ultimaCol){
 }
 
 /*Función que verifica si la ciudad es válida usando las condiciones de edificios seguidos que cada columna tiene
-*/
+Entrada: matriz con la ciudad a verificar, matriz con la restricción de edificios seguidos, y el tamanio de la ciudad
+Salida: Entero que indica si la ciudad es válida o no (0 = válida, 1 = inválida)*/
 int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 	//primero se hace una copia de la ciudad actual editarla
 	int ** ciudadCopia = (int**)malloc(sizeof(int*)*tamanio);
@@ -311,9 +284,10 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 	int valida = 0;
 	int seguidos, contadorEdifSeg;
 	//r = restricción, c = ciudad
-	int ri, rj, ci, cj;
+	int ri, rj, ci;
 	for(ri = 0; ri < tamanio; ri++){
 		for(rj = 0; rj < tamanio; rj++){
+			//seguidos es el número de edificios seguidos que deberían haber (sacado de la resctricción)
 			seguidos = restriccion[ri][rj];
 			contadorEdifSeg = 0;
 			//aquí se revisará si la ciudad es válida con el "seguidos"
@@ -321,7 +295,7 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 				//printf("filaR, colR, colC, seguidos, contadorEdifSeg: %d %d %d %d %d ", ri, rj ,ci, seguidos, contadorEdifSeg);
 				//printf("ciudadCopia[ci][ri]:  %d\n", ciudadCopia[ci][ri]);
 				//ri = columna actual de la ciudad
-				//si la columna tiene restricción de vacía, se omite
+				//si la columna tiene restricción de ser vacía, se omite
 				if(seguidos == 0){
 					ci = tamanio; 
 					rj = tamanio;
@@ -348,16 +322,11 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 				}
 				//se borra el edificio ya que ya fue procesado y así no estorbará en la siguiente iteración
 				ciudadCopia[ci][ri] = 0;
-
-
 			}
-
 			//si ya se leyó un cero, pasamos a la siguiente fila inmediatamente para ahorrar procesos
 			if (seguidos == 0) rj == tamanio;
-
 		}
 	}
-
 
 	//liberación de memoria de la copia
 	for(i = 0; i<tamanio; i++){
@@ -370,6 +339,69 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 	}
 	//caso en que la ciudad SI ES inválida
 	else return valida;
+}
+
+/*Función que recibe el espacio de soluciones inicial y retorna la ciudad final usando la segunda restricción
+Entrada: el espacio solución (triple puntero), la matriz de restricción (números de los edificios), 
+         entero con la cantidad de ciudades en el espacio solución, y el un entero con el tamanio de las ciudades
+Salida: el puntero de la matriz final a entregar por la BES*/
+int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadCiu, int tamanio){
+	if (cantidadCiu == 0){
+		printf("No se ha encontrado una ciudad que cumpla las restricciones. Retornando las última ciudad vista...\n");
+		return espacioSol[0];
+	}
+	//la ciudad parte como válida, y cuando se no se invalide alguna al verificarla se guarda y retorna
+	int valida = 0;
+	//r = restricción, es = espacio de soluciones
+	int ri, rj, esCiu, ci, i, j, numEdif;
+
+	int ** ciudadCopia = (int**)malloc(sizeof(int*)*tamanio);
+	for(i = 0; i<tamanio; i++){
+		ciudadCopia[i] = (int*)malloc(sizeof(int)*tamanio);
+	}
+
+	for(esCiu = 0; esCiu <= cantidadCiu; esCiu++){
+
+		//se copia la ciudad para poder editarla sin problemas
+		for(i = 0; i<tamanio; i++){
+			for(j = 0; j<tamanio; j++){
+				ciudadCopia[i][j] = espacioSol[esCiu][i][j];
+			}
+		}
+
+		for(ri = 0; ri < tamanio; ri++){
+			for(rj = 0; rj < tamanio; rj++){
+				//numEdif es el número que debería tener el edificio del espacio de soluciones
+				numEdif = restriccion[ri][rj];
+				//e ignora la restricción de columna de ceros que ya fue considerada antes;
+				if (rj == 0 && numEdif == 0) break;
+
+				//se compara la restriccion en la columna de la ciudad correspondiente
+				for(ci = 0; ci<tamanio; ci++){
+					//ri = columna a revisar
+					if(ciudadCopia[ci][ri] != 0){
+						//si no se cumple la restricción, se pasa a la siguiente ciudad 
+						if(numEdif != ciudadCopia[ci][ri]){
+							valida = 1;
+							ri = tamanio;
+							rj = tamanio;
+						}
+						//borramos el numero de la copia y pasamos a la siguiente restricción
+						ciudadCopia[ci][ri] = 0;
+						break;
+					}
+				}
+			}
+		}
+		//si se encuentra una ciudad válida, se retorna, sino, se reinicia el valor de válida y se pasa a otra ciudad
+		if (valida == 0){
+			printf("Ciudad Final Encontrada. Retornando...\n");
+			return espacioSol[esCiu];
+		}
+		valida = 0;
+	}
+	printf("No se ha encontrado una ciudad definitiva. Se retornará una solución no definitiva...\n");
+	return espacioSol[0];
 }
 
 /*Función que genera la matriz de la ciudad a partir de un archivo (usando busqueda en espacio de soluciones)
@@ -391,7 +423,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	//se guarda el primer numero del archivo
 	//ojo que el espacio en "%d " es importante para pasar a la siguiente linea
 	fscanf(archPuntero, "%d ", tamanio);
-	printf("tamanio de ciudad: %dx%d\n", *tamanio, *tamanio);
+	printf("Tamaño de la ciudad: %dx%d\n", *tamanio, *tamanio);
 
 
 	//procesamiento de las filas
@@ -419,8 +451,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	mejorarComb(listCombinaciones, listCombinacionActual, colNumeros, &primeraColUsar, &ultimaColUsar, *tamanio);
 
 	//creacion de tadas las ciudades posibles
-	int *** ciudadesPosibles = (int***)malloc(sizeof(int**)*1000); 
-	//RECORDAR: ver si se puede calcular esto en vez de dejar un numero al ojo
+	int *** ciudadesPosibles = (int***)malloc(sizeof(int**)*10000); 
 
 	int j, escrituraFilas;
 	//este contador avanza solo cuando la ciudad actual se verifica válida usando las pista de columnas
@@ -428,16 +459,16 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	int primeraVez = 0;
 	//variable con la posicion a leer de la matriz de filas
 	int posFilas = 1;
-	
-	printf("Ciudades Encontradas: %d\n", contador);
+	printf("Ciudades Posibles Encontradas: %d\n", contador+1);
 	do{
 
 		//si la ciudad actual no es válida, se sobreescribirá ya que este contador no avanzará
 		if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio) == 0){
 			contador++;
-			printf("Ciudades Encontradas: %d\n", contador);
+			printf("Ciudades Posibles Encontradas: %d\n", contador+1);
 		}
 
+		
 		ciudadesPosibles[contador] = (int**)malloc(sizeof(int*)*(*tamanio));
 		//1 ciudad
 		for(i = 0; i < *tamanio; i++){
@@ -483,75 +514,65 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 
 	}while(verificarFinComb(ciudadesPosibles[contador], *tamanio, ultimaColUsar) == 0);
 
-	printf("Prueba espacio soluciones:\n");
-	int k;
-	for(i = 0; i <= contador; i++){
-		for(j = 0; j<*tamanio; j++){
-			for(k = 0; k<*tamanio; k++){
-				printf("%d ", ciudadesPosibles[i][j][k]);
+	int pruebaBES = 1;
+	if (pruebaBES == 0){
+		printf("\nPrueba espacio soluciones inicial:\n");
+		int k;
+		for(i = 0; i <= contador; i++){
+			printf("Ciudad %ld\n", i+1);
+			for(j = 0; j<*tamanio; j++){
+				for(k = 0; k<*tamanio; k++){
+					printf("%d ", ciudadesPosibles[i][j][k]);
+				}
+			printf("\n");
 			}
 		printf("\n");
 		}
-	printf("\n\n");
 	}
+	//aplicación de la segunda y final restricción de columnas junto a la elección de la ciudad a enviar
+	int ** matrizFinal;
+	matrizFinal = verifCiudadColFinal(ciudadesPosibles, colNumeros, contador, *tamanio);
 
-	//salida temporal para que corra el programa
-	int** salidaWIP = (int**)malloc(sizeof(int*)*10);
-	int Matris[10][10] ={
-		{0,0,1,2,1,1,0,0,0,0},
-		{0,0,0,2,1,0,0,0,0,0},
-		{0,0,1,2,0,0,0,0,0,0},
-		{0,0,0,1,1,1,2,1,0,0},
-		{0,0,0,0,0,1,1,0,0,0},
-		{0,0,0,1,2,1,0,0,0,0},
-		{0,0,0,0,1,0,0,0,0,0},
-		{0,0,1,2,2,0,0,0,0,0},
-		{0,0,0,1,3,3,2,0,0,0},
-		{0,0,0,0,2,2,0,0,0,0}
-		};
-
-	for (i=0; i<10; i++){
-		salidaWIP[i] = (int*)malloc(sizeof(int)*10);
-		for(j=0; j<10; j++){
-			salidaWIP[i][j] = Matris[i][j];
-		}
-	}
-
-	//liberacion de memoria de la matriz con la primera mitad del texto
-	//pofa no lo olvides xd
+	//liberacion de memoria
 	for(i=0; i<*tamanio; i++){
 		free(filas[i]);
+		free(colNumeros[i]);
+		free(colEdifSeguidos[i]);
 	}
-	free(ciudadesPosibles);
 	free(filas);
+	free(colNumeros);
+	free(colEdifSeguidos);
+
+	free(listCombinacionActual);
+	free(listCombinaciones);
+
+	free(ciudadesPosibles);
 
 	fclose(archPuntero);
 
-	printf("PRUEBA VERFCIUDADVALIDACOL\n");
-	int caca;
-	caca = verifCiudadValidaCol(salidaWIP, colEdifSeguidos, *tamanio);
-	printf("Resultado: <%d>\n\n", caca);
-
-	return salidaWIP;
+	return matrizFinal;
 }
 
 
 int main(){
 	int ** ciudad;
-	ciudad = generarCiudad("entrada.txt", &tamanio);
+	ciudad = generarCiudad("entrada.in", &tamanio);
 
-	printf("Prueba salida ciudad en main:\n");
 	int i, j;
-	for(i = 0; i < tamanio; i++){
-		for(j = 0; j < tamanio; j++){
-			printf("%d ", ciudad[i][j]);
+	int pruebaFinal = 0;
+	if (pruebaFinal == 0){
+		printf("\nCiudad:\n");
+		for(i = 0; i < tamanio; i++){
+			for(j = 0; j < tamanio; j++){
+				printf("%d ", ciudad[i][j]);
+			}
+			printf("\n");
 		}
-		printf("\n");
 	}
 
 
-	//liberacion de la memoria usada por la matriz
-	for(i=0; i<10; i++){//CAMBIAR EL 10 CUADNO LA CIUDAD SE DEVUELVA BIEN
+	//liberacion de la memoria usada por la matriz de la ciudad
+	for(i=0; i<tamanio; i++){
 		free(ciudad[i]);
 	}
 	free(ciudad);
@@ -559,6 +580,3 @@ int main(){
 	return 0;
 
 }
-
-//no olvidar:
-//arreglar el 10 del ultimo free
