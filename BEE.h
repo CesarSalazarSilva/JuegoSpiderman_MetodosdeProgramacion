@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include<time.h>
 
-int tamanio;
 int correlativo = 0;
 
 //Creamos un Structure con :
@@ -284,7 +279,6 @@ char * mostrarsolucion(estado * lista, int largolista, estado Estadofinal){
     fwrite(&Solucion[contador-3],sizeof(char),1,archivo);
     fwrite(&parI,sizeof(char),1,archivo);
     fwrite(&esp,sizeof(char),1,archivo);
-
     for (int i = contador-4; -1 < i; --i)
     {
     	fwrite(&Solucion[i],sizeof(char),1,archivo);
@@ -360,6 +354,11 @@ int ** IniciosPosibles(int ** arreglo, int * aux, int fila, int columna){
 			return comienzosPosibles;
 		}
 	}
+}
+
+int * crearconjuntosolucion(int tamano){
+	int*lista = (int*)malloc(sizeof(int)*tamano);
+	return lista;
 }
 
 //Funcion que realiza la Busqueda en Espacio de Estados.

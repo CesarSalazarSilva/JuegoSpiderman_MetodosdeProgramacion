@@ -1,4 +1,4 @@
-
+int tamanio;
 //Función que reescribe la ciudad actual del usuario en un archivo nuevo
 void copiaCiudad(char * dirMapaNuevo, int** mapa){
 	FILE * archivoRecorrido;

@@ -3,8 +3,6 @@
 #include <math.h>
 #include<time.h>
 
-int tamanio;
-
 //Funcion que crea el archivo codificado de la ciudad.
 //Entrada : Un arreglo a codificar, su largo.
 //Salida  : Un archivo de nombre SalidaInverso.txt con la ciudad codificada.

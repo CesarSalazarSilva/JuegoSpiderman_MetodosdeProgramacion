@@ -18,6 +18,9 @@ int main(){
 	char desicion,a;
 	printf("Estoy decodificando el archivo...\n\n");
 	ciudad = generarCiudad("entrada.txt", &tamanio);
+	printf(" Presione Enter para comenzar a jugar...");
+	getchar();
+	getchar();
 	
 	do{
 		system("clear");
@@ -69,8 +72,8 @@ int main(){
 				}
 				if (ver==0){
 					printf("\n No hay solucion\n");
-				}	
-				printf("Presione Enter para retornar al MENU.  \n");
+				}
+				printf("\n Presione Enter para retornar al MENU... ");
 				getchar();
 				getchar();
 		    	break; 
@@ -97,7 +100,7 @@ int main(){
 				if (ver==0){
 					printf("\n No hay solucion\n");
 				}			
-				printf("Presione Enter para retornar al MENU. \n");
+				printf("\n Presione Enter para retornar al MENU... ");
 				getchar();
 				getchar();
 		    	break; 
@@ -106,7 +109,7 @@ int main(){
 		    	system("clear");
 		    	printf("Estoy preparando tu juego... \n\n");
 		    	recorridoManual(ciudad);
-		    	printf("Presione Enter para retornar al MENU. \n");
+		    	printf("\n Presione Enter para retornar al MENU... ");
 				getchar();
 				getchar();
 		    	break; 
@@ -123,7 +126,7 @@ int main(){
 		      	scanf("%d", &n);
 		      	nuevaciudad = ObtenerMatriz(n);
 		      	Inverso(nuevaciudad,n);
-		      	printf("\nSe ha codificado la ciudad, presione \"Enter\" para continuar \n");
+		      	printf("\nSe ha codificado la ciudad, presione \"Enter\" para continuar... ");
 				getchar();
 				getchar();
 		      	break; 
@@ -131,7 +134,7 @@ int main(){
 			default :
 				system("clear"); 
 				printf("Por favor ingrese una opción válida.");
-				printf("Presione Enter para continuar. \n");
+				printf("\n Presione Enter para retornar al MENU... ");
 				getchar();
 				getchar();
 				break;
