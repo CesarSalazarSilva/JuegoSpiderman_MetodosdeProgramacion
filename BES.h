@@ -85,11 +85,11 @@ int ** procesarFilas(FILE * archivo, long int * combTotales, int tamanio, int *l
 	return filas;
 }
 
-/*Funcion que procesa la segunda mitad del archivo, las partes de las columnas, 
+/*Funcion que procesa la segunda mitad del archivo, las partes de las columnas,
 y separa los 2 datos que entrega en 2 matrices.
 Entrada: puntero a un archivo/tamanio de la ciudad/matriz de los numeros de cada edificio a rellenar/
 matriz que indica cuantos edificios seguidos hay, a rellenar
-Salida: void*/ 
+Salida: void*/
 void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** colEdifSeguidos){
 
 	int i, j, k, aux, edifTotal;
@@ -110,13 +110,20 @@ void procesarColumnas(FILE * archivo, int tamanio, int ** colNumeros, int ** col
 		}
 		else{
 			for(j=0; j < tamanio*2; j+=2){
-				//caso en que solo haya 1 edificio en la columna
+				//caso en que solo haya 1 bloque de edificios en la fila
 				if(j==0 && linea[1] != '-'){
 					//truco para transformar un char del 0 al 9 en int
 					aux = linea[0] - '0';
 					colEdifSeguidos[i][0] = aux;
-					aux = linea[2] - '0';
-					colNumeros[i][0] = aux;
+					for(k = 2; k < tamanio*2+1; k+=2){
+						if(k < colEdifSeguidos[i][0]*2+1){
+							aux = linea[k] - '0';
+							colNumeros[i][k/2-1] = aux;
+						}
+						else{
+							colNumeros[i][k/2-1] = 0;
+						}
+					}
 				}
 				//caso para contar cuantos edificios seguidos hay
 				else if (linea[j+1] == '-' || (j>0 && linea[j-1] == '-')){
@@ -252,7 +259,7 @@ int verificarFinComb(int ** ciudad, int tamanio, int ultimaCol){
 	for(i = 0; i < tamanio; i++){
 		if (ciudad[i][ultimaCol] == 0){
 			fin = 1;
-			i = tamanio; 
+			i = tamanio;
 		}
 	}
 	//caso en que se llega a la ultima combinacion
@@ -268,13 +275,11 @@ int verificarFinComb(int ** ciudad, int tamanio, int ultimaCol){
 /*Función que verifica si la ciudad es válida usando las condiciones de edificios seguidos que cada columna tiene
 Entrada: matriz con la ciudad a verificar, matriz con la restricción de edificios seguidos, y el tamanio de la ciudad
 Salida: Entero que indica si la ciudad es válida o no (0 = válida, 1 = inválida)*/
-int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
+int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio, int ** ciudadCopia){
 	//primero se hace una copia de la ciudad actual editarla
-	int ** ciudadCopia = (int**)malloc(sizeof(int*)*tamanio);
-	int i, j;
 
+	int i, j;
 	for(i = 0; i<tamanio; i++){
-		ciudadCopia[i] = (int*)malloc(sizeof(int)*tamanio);
 		for(j = 0; j<tamanio; j++){
 			ciudadCopia[i][j] = ciudadActual[i][j];
 		}
@@ -285,54 +290,70 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 	int seguidos, contadorEdifSeg;
 	//r = restricción, c = ciudad
 	int ri, rj, ci;
+	//primero se invalida inmediatamente la ciudad si se encuentra que tiene una columna de ceros cuando no deberia
+	int vacios = 0;
 	for(ri = 0; ri < tamanio; ri++){
-		for(rj = 0; rj < tamanio; rj++){
-			//seguidos es el número de edificios seguidos que deberían haber (sacado de la resctricción)
-			seguidos = restriccion[ri][rj];
-			contadorEdifSeg = 0;
-			//aquí se revisará si la ciudad es válida con el "seguidos"
-			for(ci = 0; ci<tamanio; ci++){
-				//printf("filaR, colR, colC, seguidos, contadorEdifSeg: %d %d %d %d %d ", ri, rj ,ci, seguidos, contadorEdifSeg);
-				//printf("ciudadCopia[ci][ri]:  %d\n", ciudadCopia[ci][ri]);
-				//ri = columna actual de la ciudad
-				//si la columna tiene restricción de ser vacía, se omite
-				if(seguidos == 0){
-					ci = tamanio; 
-					rj = tamanio;
-					break;
-				}
-				//se revisan ahora los edificios seguidos
-				else{
-					if(ciudadCopia[ci][ri] != 0){
-						contadorEdifSeg += 1;
-					}
-					else if(ciudadCopia[ci][ri] == 0 && contadorEdifSeg !=0){
-						//los edificios seguidos que deberían haber no calzan conlas restricciones
-						if (seguidos!=contadorEdifSeg){
-							valida = 1;
-							ri = tamanio;
-							rj = tamanio;
-							ci = tamanio;
-						}
-						//se pasa a la siguiente restricción y se reinicia el contador de edificios seguidos
-						ci = tamanio;
-						contadorEdifSeg = 0;
-						break;
-					}
-				}
-				//se borra el edificio ya que ya fue procesado y así no estorbará en la siguiente iteración
-				ciudadCopia[ci][ri] = 0;
-			}
-			//si ya se leyó un cero, pasamos a la siguiente fila inmediatamente para ahorrar procesos
-			if (seguidos == 0) rj == tamanio;
-		}
+        seguidos = restriccion[ri][0];
+        if(seguidos != 0){
+            for(ci = 0; ci<tamanio; ci++){
+                if(ciudadCopia[ci][ri] == 0){
+                    vacios++;
+                }
+            }
+        }
+        if (vacios == tamanio){
+            valida = 1;
+            ri = tamanio;
+        }
+        vacios = 0;
 	}
 
-	//liberación de memoria de la copia
-	for(i = 0; i<tamanio; i++){
-		free(ciudadCopia[i]);
+	//ahora se entra a verificar si la ciudad es valida usando los edificios seguidos que se encuentren
+	if(valida == 0){
+        for(ri = 0; ri < tamanio; ri++){
+            for(rj = 0; rj < tamanio; rj++){
+                //seguidos es el número de edificios seguidos que deberían haber (sacado de la resctricción)
+                seguidos = restriccion[ri][rj];
+                contadorEdifSeg = 0;
+                //aquí se revisará si la ciudad es válida con el "seguidos"
+                for(ci = 0; ci<tamanio; ci++){
+                    //printf("filaR, colR, colC, seguidos, contadorEdifSeg: %d %d %d %d %d ", ri, rj ,ci, seguidos, contadorEdifSeg);
+                    //printf("ciudadCopia[ci][ri]:  %d\n", ciudadCopia[ci][ri]);
+                    //ri = columna actual de la ciudad
+                    //si la columna tiene restricción de ser vacía, se omite
+                    if(seguidos == 0){
+                        ci = tamanio;
+                        rj = tamanio;
+                        break;
+                    }
+                    //se revisan ahora los edificios seguidos
+                    else{
+                        if(ciudadCopia[ci][ri] != 0){
+                            contadorEdifSeg += 1;
+                        }
+                        else if(ciudadCopia[ci][ri] == 0 && contadorEdifSeg !=0){
+                            //los edificios seguidos que deberían haber no calzan conlas restricciones
+                            if (seguidos!=contadorEdifSeg){
+                                valida = 1;
+                                ri = tamanio;
+                                rj = tamanio;
+                                ci = tamanio;
+                            }
+                            //se pasa a la siguiente restricción y se reinicia el contador de edificios seguidos
+                            ci = tamanio;
+                            contadorEdifSeg = 0;
+                            break;
+                        }
+                    }
+                    //se borra el edificio ya que ya fue procesado y así no estorbará en la siguiente iteración
+                    ciudadCopia[ci][ri] = 0;
+                }
+                //si ya se leyó un cero, pasamos a la siguiente fila inmediatamente para ahorrar procesos
+                if (seguidos == 0) rj = tamanio;
+            }
+        }
 	}
-	free(ciudadCopia);
+
 	//caso en que la ciudad no es invalidada
 	if (valida == 0){
 		return valida;
@@ -342,23 +363,15 @@ int verifCiudadValidaCol(int ** ciudadActual, int ** restriccion, int tamanio){
 }
 
 /*Función que recibe el espacio de soluciones inicial y retorna la ciudad final usando la segunda restricción
-Entrada: el espacio solución (triple puntero), la matriz de restricción (números de los edificios), 
+Entrada: el espacio solución (triple puntero), la matriz de restricción (números de los edificios),
          entero con la cantidad de ciudades en el espacio solución, y el un entero con el tamanio de las ciudades
 Salida: el puntero de la matriz final a entregar por la BES*/
-int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadCiu, int tamanio){
-	if (cantidadCiu == 0){
-		printf("No se ha encontrado una ciudad que cumpla las restricciones. Retornando las última ciudad vista...\n");
-		return espacioSol[0];
-	}
+int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadCiu, int tamanio, int ** ciudadCopia){
+
 	//la ciudad parte como válida, y cuando se no se invalide alguna al verificarla se guarda y retorna
 	int valida = 0;
 	//r = restricción, es = espacio de soluciones
 	int ri, rj, esCiu, ci, i, j, numEdif;
-
-	int ** ciudadCopia = (int**)malloc(sizeof(int*)*tamanio);
-	for(i = 0; i<tamanio; i++){
-		ciudadCopia[i] = (int*)malloc(sizeof(int)*tamanio);
-	}
 
 	for(esCiu = 0; esCiu <= cantidadCiu; esCiu++){
 
@@ -380,7 +393,7 @@ int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadC
 				for(ci = 0; ci<tamanio; ci++){
 					//ri = columna a revisar
 					if(ciudadCopia[ci][ri] != 0){
-						//si no se cumple la restricción, se pasa a la siguiente ciudad 
+						//si no se cumple la restricción, se pasa a la siguiente ciudad
 						if(numEdif != ciudadCopia[ci][ri]){
 							valida = 1;
 							ri = tamanio;
@@ -400,7 +413,7 @@ int ** verifCiudadColFinal(int *** espacioSol, int ** restriccion, int cantidadC
 		}
 		valida = 0;
 	}
-	printf("No se ha encontrado una ciudad definitiva. Se retornará una solución no definitiva...\n");
+	printf("No se ha encontrado una ciudad definitiva. Se va a retornar una ciudad no defintiva...\n");
 	return espacioSol[0];
 }
 
@@ -423,7 +436,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	//se guarda el primer numero del archivo
 	//ojo que el espacio en "%d " es importante para pasar a la siguiente linea
 	fscanf(archPuntero, "%d ", tamanio);
-	printf("Tamaño de la ciudad: %dx%d\n", *tamanio, *tamanio);
+	printf("Largo/Ancho de la ciudad detectado: %dx%d\n", *tamanio, *tamanio);
 
 
 	//procesamiento de las filas
@@ -451,25 +464,30 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	mejorarComb(listCombinaciones, listCombinacionActual, colNumeros, &primeraColUsar, &ultimaColUsar, *tamanio);
 
 	//creacion de tadas las ciudades posibles
-	int *** ciudadesPosibles = (int***)malloc(sizeof(int**)*10000); 
+	int *** ciudadesPosibles = (int***)malloc(sizeof(int**)*20000);
+    ciudadesPosibles[0] = (int**)malloc(sizeof(int*)*(*tamanio));
 
 	int j, escrituraFilas;
 	//este contador avanza solo cuando la ciudad actual se verifica válida usando las pista de columnas
-	int contador = 0;
+	long int contador = 0;
 	int primeraVez = 0;
 	//variable con la posicion a leer de la matriz de filas
 	int posFilas = 1;
-	printf("Ciudades Posibles Encontradas: %d\n", contador+1);
+	printf("Se ha comenzado el procesamiento de la ciudad...\n");
+	//variable ocupada en las verificaciones la cual es declarada acá para no hacer demasiadas veces malloc
+    int ** ciudadCopia = (int**)malloc(sizeof(int*)*(*tamanio));
+    for(i = 0; i<*tamanio; i++){
+        ciudadCopia[i] = (int*)malloc(sizeof(int)*(*tamanio));
+    }
 	do{
 
 		//si la ciudad actual no es válida, se sobreescribirá ya que este contador no avanzará
-		if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio) == 0){
+		if (primeraVez != 0 && verifCiudadValidaCol(ciudadesPosibles[contador], colEdifSeguidos, *tamanio, ciudadCopia) == 0){
 			contador++;
-			printf("Ciudades Posibles Encontradas: %d\n", contador+1);
+            		ciudadesPosibles[contador] = (int**)malloc(sizeof(int*)*(*tamanio));
+			printf("Ciudades Posibles Encontradas: %ld\n", contador);
 		}
 
-		
-		ciudadesPosibles[contador] = (int**)malloc(sizeof(int*)*(*tamanio));
 		//1 ciudad
 		for(i = 0; i < *tamanio; i++){
 			ciudadesPosibles[contador][i] = (int*)malloc(sizeof(int)*(*tamanio));
@@ -486,7 +504,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 					escrituraFilas = 1;
 				//donde se escriben los ceros a la izquierda de la fila
 				if (escrituraFilas == 0)
-					ciudadesPosibles[contador][i][j] = 0;	
+					ciudadesPosibles[contador][i][j] = 0;
 				//donde se escriben los numeros de los edificios en la fila
 				if (escrituraFilas == 1){
 					if (filas[i][posFilas] == 0)
@@ -499,7 +517,6 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 				//donde se escriben los ceros a la derecha de la fila
 				if (escrituraFilas == 2)
 					ciudadesPosibles[contador][i][j] = 0;
-
 
 				//printf("%d ", ciudadesPosibles[contador][i][j]);
 			}
@@ -531,7 +548,18 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 	}
 	//aplicación de la segunda y final restricción de columnas junto a la elección de la ciudad a enviar
 	int ** matrizFinal;
-	matrizFinal = verifCiudadColFinal(ciudadesPosibles, colNumeros, contador, *tamanio);
+	matrizFinal = verifCiudadColFinal(ciudadesPosibles, colNumeros, contador, *tamanio, ciudadCopia);
+
+    int pruebaSolFinal = 1;
+    if(pruebaSolFinal == 0){
+        printf("\nPrueba ciudad encontrada:\n");
+        for(i = 0; i<*tamanio; i++){
+            for(j = 0; j<*tamanio; j++){
+                printf("%d ", matrizFinal[i][j]);
+            }
+        printf("\n");
+        }
+    }
 
 	//liberacion de memoria
 	for(i=0; i<*tamanio; i++){
@@ -552,5 +580,3 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 
 	return matrizFinal;
 }
-
-

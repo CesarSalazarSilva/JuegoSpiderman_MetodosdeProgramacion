@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
+#include <ctype.h>
 
 
 #include "BEE.h"
@@ -17,7 +19,7 @@ int main(){
 	int ver,i,aux;
 	char desicion,a;
 	printf("Estoy decodificando el archivo...\n\n");
-	ciudad = generarCiudad("entrada.txt", &tamanio);
+	ciudad = generarCiudad("entrada.in", &tamanio);
 	printf(" Presione Enter para comenzar a jugar...");
 	getchar();
 	getchar();
