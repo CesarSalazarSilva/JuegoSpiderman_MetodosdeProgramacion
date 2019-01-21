@@ -98,7 +98,7 @@ void juegoNuevo(int** matrizCiudad){
 	int contadorEdificios=0;
 	char * inputDireccion;
 	inputDireccion="recorridoUsuario.txt";
-	char opcion;
+	char opcion, filaInput, columnaInput;
 	for (int i=0;i<tamanio;i++){
 		for (int j=0;j<tamanio;j++){
 			caracter = matrizCiudad[i][j];
@@ -111,18 +111,19 @@ void juegoNuevo(int** matrizCiudad){
 	do{
 		printf("Ingrese las coordenadas del punto [fila][columna] de donde quiere partir, considere que solo puede partir en aquellos puntos del mapa distintos a '0' :\n");
 		printf("Ingrese el numero de fila:\n");
-		scanf("%c", &fila);
-		while(verificaNumero(fila)==0){
+		scanf("%c", &filaInput);
+		while(verificaNumero(filaInput)==0){
 			printf("\nPor favor ingresa un número, no una letra o caracter:");
-			scanf("%c", &fila);
+			scanf("%c", &filaInput);
 		}
 		printf("Ingrese el numero de columna:\n");
-		scanf("%c", &columna);
-		while(verificaNumero(columna)==0){
+		scanf("%c", &columnaInput);
+		while(verificaNumero(columnaInput)==0){
 			printf("\nPor favor ingresa un número, no una letra o caracter:");
-			scanf("%c", &columna);
+			scanf("%c", &columnaInput);
 		}
-		///////////ACA TENGO QUE CASTEAR LOS NUMEROS///////////////////////////////
+		fila=atoi(filaInput);
+		columna=atoi(columnaInput);
 		fila= fila-1;
 		columna= columna-1;
 		if (fila>tamanio || fila<0 || columna >tamanio || columna <0){
@@ -313,7 +314,7 @@ void juegoAnterior(){
 	int contadorEdificios=0;
 	char * inputDireccion;
 	inputDireccion="recorridoUsuario.txt";
-	char opcion;
+	char opcion, filaInput, columnaInput;
 	archivoJuegoAnterior= fopen(inputDireccion, "r");
 	if (archivoJuegoAnterior==NULL){
 		printf("\nNo has iniciado ningun juego anteriormente, cerrando programa...");		
@@ -341,17 +342,19 @@ void juegoAnterior(){
 	do{
 		printf("\nIngrese las coordenadas del punto [fila][columna] de donde quiere partir, considere que solo puede partir en aquellos puntos del mapa distintos a '0' :\n");
 		printf("Ingrese el número de fila:\n");
-		scanf("%c", &fila);
-		while(verificaNumero(fila)==0){
+		scanf("%c", &filaInput);
+		while(verificaNumero(filaInput)==0){
 			printf("\nPor favor ingresa un número, no una letra o caracter:");
-			scanf("%c", &fila);
+			scanf("%c", &filaInput);
 		}
 		printf("Ingrese el numero de columna:\n");
-		scanf("%c", &columna);
-		while(verificaNumero(columna)==0){
+		scanf("%c", &columnaInput);
+		while(verificaNumero(columnaInput)==0){
 			printf("\nPor favor ingresa un número, no una letra o caracter:");
-			scanf("%c", &columna);
+			scanf("%c", &columnaInput);
 		}
+		fila= atoi(filaInput);
+		columna=atoi(columnaInput);
 		fila= fila-1;
 		columna= columna-1;
 		if (fila>tamanio || fila<0 || columna> tamanio || columna<0){
