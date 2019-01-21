@@ -96,7 +96,7 @@ int main(){
 				for (i = 0; i < aux; ++i){
 					if (iniSol[i] == 1){
 						ver+=1;
-						printf("\n Hay solucion en : %d,%d \n",inicio[i][0]+1,inicio[i][1]+1);
+						printf("\n Hay solucion en : %d,%d \n",inicio[i][1]+1,inicio[i][0]+1);
 					}					
 				}
 				if (ver==0){
