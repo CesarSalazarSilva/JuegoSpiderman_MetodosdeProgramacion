@@ -309,7 +309,9 @@ void juegoNuevo(int** matrizCiudad){
                                     }
                                 }
                             }
-
+                        default:
+                            printf("Ingrese un movimiento valido.\n");
+                            break;
                     }
                 }
             }
@@ -483,7 +485,7 @@ void juegoAnterior(){
                                         }
                                     }
                                 }
-                            case 4:
+                            case 1:
                                 if (columna-1<0){
                                     printf("\nHas salido de los bordes de la ciudad!");
                                     printf("\nIngresa otra accion(5.Arriba, 2.Abajo, 3. Derecha, 1. Izquierda, 6. Salir");
@@ -521,6 +523,9 @@ void juegoAnterior(){
                                         }
                                     }
                                 }
+                            default:
+                                printf("Ingrese un movimiento valido.\n");
+                                break;
                         }
                     }
                 }
