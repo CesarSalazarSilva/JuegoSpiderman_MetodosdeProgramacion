@@ -576,7 +576,7 @@ int ** generarCiudad(char * nombreArchivo, int *tamanio){
 
 	free(ciudadesPosibles);
 
-	fclose(archPuntero);
+	
 
 	return matrizFinal;
 }
